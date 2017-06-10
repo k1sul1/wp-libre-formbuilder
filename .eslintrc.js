@@ -9,8 +9,8 @@ module.exports = {
   env: {
     browser: true,
   },
-  // https://github.com/feross/standard/blob/master/RULES.md#javascript-standard-style
-  extends: 'standard',
+  // https://github.com/Flet/semistandard#rules
+  extends: 'semistandard',
   // required to lint *.vue files
   plugins: [
     'html'
