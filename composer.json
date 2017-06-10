@@ -1,14 +1,16 @@
 {
-    "name": "k1sul1/wp-libre-formbuilder",
-    "description": "Formbuilder addon for WP Libre Form.,",
-    "type": "wordpress-plugin",
-    "license": "GPL-2.0",
-    "authors": [
-        {
-            "name": "Christian Nikkanen",
-            "email": "hi@kisu.li"
-        }
-    ],
-    "minimum-stability": "stable",
-    "require": {}
+  "name": "k1sul1/wp-libre-formbuilder",
+  "description": "Formbuilder addon for WP Libre Form.,",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0",
+  "authors": [
+    {
+      "name": "Christian Nikkanen",
+      "email": "hi@kisu.li"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "anttiviljami/wp-libre-form": "^1.4"
+  }
 }
