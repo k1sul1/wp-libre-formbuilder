@@ -1,6 +1,5 @@
 <template>
   <div id="wplfb_buildarea">
-    <img src="./assets/logo.png">
     <router-view></router-view>
   </div>
 </template>
@@ -11,20 +10,16 @@ export default {
 };
 </script>
 
-<style lang="stylus">
+<style lang="stylus" global>
 #wplfb_buildarea {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  font-family: 'Avenir', Helvetica, Arial, sans-serif
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  text-align: center
+  color: #2c3e50
 }
 
-.wplfb-field__children {
-  outline: 1px solid red;
-  min-height: 40px;
-  width: 100%;
-  margin-bottom: 10px;
+p {
+  margin-top: 0
 }
 </style>
