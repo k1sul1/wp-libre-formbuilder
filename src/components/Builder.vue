@@ -1,32 +1,55 @@
 <template>
   <div class="wplfb-sandbox">
-    <draggable class="wplfb-sandbox__playfield" :options="{group: {name: 'fields', put: true }}">
-      <p>Drag into me!</p>
+    <draggable
+      class="wplfb-sandbox__playfield"
+      :options="{group: {name: 'fields', put: true }}"
+      v-model="tree"
+    >
+      <p>Drag fields into me!</p>
     </draggable>
 
     <draggable class="wplfb-sandbox__tools" :options="{group: {name: 'fields', pull: 'clone', put: false }}">
-      <p>Or me! </p>
       <div v-for="(value, key) in fields" class="wplfb-field">
-        <header>{{ key }}</header>
-        <pre>{{ value }}</pre>
-        <wplfb-field v-bind:element="value.element" v-bind:attributes="value.attributes" v-bind:takes_children="value.takes_children">Hello</wplfb-field>
+        <!-- <header>{{ key }}</header> -->
+        <!-- <pre>{{ value.attributes }}</pre> -->
+        <wplfb-field
+          v-bind:name="key"
+          v-bind:element="value.element"
+          v-bind:attributes="value.attributes"
+          v-bind:takes_children="value.takes_children"
+        >
+          <!-- Children will be placed here -->
+        </wplfb-field>
       </div>
     </draggable>
   </div>
 </template>
 
 <script>
+import field from './Field';
 import draggable from 'vuedraggable';
 
 export default {
   name: 'builder',
   components: {
-    draggable
+    draggable,
+    'wplfb-field': field
+  },
+  computed: {
+    /* tree: {
+      get() {
+        return this.$store.state.tree;
+      },
+
+      set(value) {
+        this.$store.commit('updateTree', value);
+      }
+    } */
   },
   data () {
     return {
       fields: {
-        'text': {
+        'Text': {
           element: 'input',
           attributes: {
             type: 'text',
@@ -36,7 +59,7 @@ export default {
           takes_children: false
         },
 
-        'wrapper': {
+        'Wrapper': {
           element: 'div',
           attributes: {
             className: 'fc-row'
@@ -50,19 +73,31 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="stylus" scoped>
+<style lang="stylus">
 .wplfb-sandbox {
-  text-align: left;
-  display: flex;
+  text-align: left
+  display: flex
+  flex-flow: row nowrap
+  align-items: flex-start
+  justify-content: space-between
 
   &__playfield {
-    width: 70%;
-    outline: 1px solid black;
+    width: 65%
+    min-height: 100vh
   }
 
   &__tools {
-    width: 30%;
-    outline: 1px solid gray;
+    width: 30%
+
+    .wplfb-field {
+      .remove {
+        display: none
+      }
+    }
+  }
+
+  .wplfb-field {
+    margin-bottom: 1rem
   }
 }
 
