@@ -27,7 +27,30 @@ module.exports = {
     autoOpenBrowser: true,
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      // '/wp-admin': {
+        // target: 'https://libreformbuilder.local/wp-admin',
+        // filter: (pathname, req) => {
+          // return (!pathname.match('.css') && !pathname.match('.js'));
+        // },
+        // changeOrigin: true,
+        // secure: false,
+        // pathRewrite: {
+          // '^/wp-admin': ''
+        // }
+      // },
+      // '/wp-login.php': {
+        // target: 'https://libreformbuilder.local/wp-login.php',
+        // filter: (pathname, req) => {
+          // return (!pathname.match('.css') && !pathname.match('.js'));
+        // },
+        // changeOrigin: true,
+        // secure: false,
+        // pathRewrite: {
+          // '^/wp-login.php': ''
+        // }
+      // }
+    },
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README
     // (https://github.com/webpack/css-loader#sourcemaps)
