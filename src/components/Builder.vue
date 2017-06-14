@@ -9,7 +9,7 @@
     </draggable>
 
     <draggable class="wplfb-sandbox__tools" :options="{group: {name: 'fields', pull: 'clone', put: false }}">
-      <div v-for="(value, key) in fields" class="wplfb-field">
+      <template v-for="(value, key) in fields">
         <!-- <header>{{ key }}</header> -->
         <!-- <pre>{{ value.attributes }}</pre> -->
         <wplfb-field
@@ -20,7 +20,7 @@
         >
           <!-- Children will be placed here -->
         </wplfb-field>
-      </div>
+      </template>
     </draggable>
   </div>
 </template>
@@ -98,6 +98,10 @@ export default {
 
   .wplfb-field {
     margin-bottom: 1rem
+
+    &:last-child {
+      margin-bottom: 0
+    }
   }
 }
 
