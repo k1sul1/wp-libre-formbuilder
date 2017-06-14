@@ -3,45 +3,15 @@
 import Vue from 'vue';
 import App from './App';
 import router from './router';
-import draggable from 'vuedraggable';
+// import draggable from 'vuedraggable';
 
 Vue.config.productionTip = false;
 
-Vue.component('wplfb-field', {
-  components: { draggable },
-  render: function (h) {
-    const options = {
-      group: {
-        name: 'fields',
-        put: true
-      }
-    };
-    const children = <draggable class="wplfb-field__children" options={options}>
-      {this.$slots.default}
-    </draggable>;
-    const maybeChildren = this.takes_children ? children : false;
-
-    return <this.element is={this.element} {...this.attributes}>
-      {maybeChildren}
-    </this.element>;
-  },
-  props: {
-    element: {
-      type: String,
-      required: true
-    },
-
-    attributes: {
-      type: Object,
-      required: false
-    },
-
-    takes_children: {
-      type: Boolean,
-      required: true
-    }
-  }
-});
+// Vue.component('wplfb-field', {
+  // components: { draggable },
+  // render: ,
+  // props:
+// });
 
 /* eslint-disable no-new */
 new Vue({
