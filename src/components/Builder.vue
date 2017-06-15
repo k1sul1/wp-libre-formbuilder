@@ -11,17 +11,19 @@
       class="wplfb-sandbox__tools"
       :options="{group: {name: 'fields', pull: 'clone', put: false }}"
     >
-      <template v-for="(value, key) in fields">
-        <!-- <header>{{ key }}</header> -->
-        <pre>{{ value.attributes }}</pre>
-        <wplfb-field
-          v-bind:name="key"
-          v-bind:element="value.element"
-          v-bind:attributes="value.attributes"
-          v-bind:takes_children="value.takes_children"
-        >
+      <template v-for="field in fields">
+        <template v-for="(value, key) in field">
+          <!-- <header>{{ key }}</header> -->
+          <pre>{{ value }}</pre>
+          <wplfb-field
+            v-bind:name="key"
+            v-bind:element="value.element"
+            :attributes="value.attributes"
+            v-bind:takes_children="value.takes_children"
+          >
           <!-- Children will be placed here -->
         </wplfb-field>
+        </template>
       </template>
     </draggable>
   </div>
@@ -50,8 +52,8 @@ export default {
   }, */
   data () {
     return {
-      fields: {
-        'Text': {
+      fields: [
+        { 'Text2': {
           element: 'input',
           attributes: {
             type: 'text',
@@ -60,16 +62,16 @@ export default {
             name: 'test',
           },
           takes_children: false
-        },
+        } },
 
-        'Wrapper': {
+        { 'Wrapper': {
           element: 'div',
           attributes: {
             class: ['b', 'c'],
           },
           takes_children: true
-        }
-      }
+        } }
+      ]
     };
   }
 };
