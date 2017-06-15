@@ -31,6 +31,17 @@ export default {
         })
     */
 
+    // proposed: https://github.com/vuejs/Discussion/issues/292
+    // const attributes = JSON.parse(JSON.stringify(this.attributes));
+
+    // Less hacky.
+    const attributes = Object.keys(this.attributes).reduce((attrs, key) => {
+      const value = this.attributes[key];
+      return { ...attrs, [key]: value };
+    }, {});
+
+    console.log(attributes);
+
     return (
       <div class="wplfb-field">
         <header class="wplfb-field__header">
@@ -44,10 +55,8 @@ export default {
         <div class="wplfb-field__fieldwrap">
           <this.element
             is={this.element}
-            placeholder={this.attributes.placeholder}
-            type={this.attributes.type}
-            name={this.attributes.name}
-            {...this.attributes /* No idea why this doesn't work. */}
+            placeholder={attributes.placeholder}
+            {...attributes}
           >
             {children}
           </this.element>
@@ -96,6 +105,7 @@ highlightColour = #0073aa;
   &__fieldwrap {
     padding: 0.5rem 1rem
     border: 0.0625rem solid #e5e5e5
+    background: #fff
     border-top: 0
   }
 
