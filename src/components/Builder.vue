@@ -28,14 +28,14 @@
 </template>
 
 <script>
-import field from './Field';
+// import field from './Field';
 import draggable from 'vuedraggable';
 
 export default {
   name: 'builder',
   components: {
     draggable,
-    'wplfb-field': field
+    // 'wplfb-field': field
   },
   /* computed: {
     tree: {
