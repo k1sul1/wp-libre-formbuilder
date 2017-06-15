@@ -21,8 +21,11 @@ Vue.component('wplfb-field', {
     </draggable>;
     const maybeChildren = this.takes_children ? children : false;
 
-    console.log(JSON.parse(JSON.stringify(this.attributes))); // spread seems to work without
-    return <this.element is={this.element} {...this.attributes}>
+    const attributes = JSON.parse(JSON.stringify(this.attributes));
+    console.log(this);
+    console.log(attributes);
+    console.log(Object.keys(attributes));
+    return <this.element is={this.element} {...attributes}>
       {maybeChildren}
     </this.element>;
   },
