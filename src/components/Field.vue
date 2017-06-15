@@ -55,8 +55,7 @@ export default {
         <div class="wplfb-field__fieldwrap">
           <this.element
             is={this.element}
-            placeholder={attributes.placeholder}
-            {...attributes}
+            {...{attrs: attributes}}
           >
             {children}
           </this.element>
