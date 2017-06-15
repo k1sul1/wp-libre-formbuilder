@@ -13,7 +13,7 @@
     >
       <template v-for="(value, key) in fields">
         <!-- <header>{{ key }}</header> -->
-        <!-- <pre>{{ value.attributes }}</pre> -->
+        <pre>{{ value.attributes }}</pre>
         <wplfb-field
           v-bind:name="key"
           v-bind:element="value.element"
