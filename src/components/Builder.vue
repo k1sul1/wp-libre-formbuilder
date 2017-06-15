@@ -3,12 +3,14 @@
     <draggable
       class="wplfb-sandbox__playfield"
       :options="{group: {name: 'fields', put: true }}"
-      v-model="tree"
     >
       <p>Drag fields into me!</p>
     </draggable>
 
-    <draggable class="wplfb-sandbox__tools" :options="{group: {name: 'fields', pull: 'clone', put: false }}">
+    <draggable
+      class="wplfb-sandbox__tools"
+      :options="{group: {name: 'fields', pull: 'clone', put: false }}"
+    >
       <template v-for="(value, key) in fields">
         <!-- <header>{{ key }}</header> -->
         <!-- <pre>{{ value.attributes }}</pre> -->
@@ -35,8 +37,8 @@ export default {
     draggable,
     'wplfb-field': field
   },
-  computed: {
-    /* tree: {
+  /* computed: {
+    tree: {
       get() {
         return this.$store.state.tree;
       },
@@ -44,8 +46,8 @@ export default {
       set(value) {
         this.$store.commit('updateTree', value);
       }
-    } */
-  },
+    }
+  }, */
   data () {
     return {
       fields: {
@@ -54,7 +56,8 @@ export default {
           attributes: {
             type: 'text',
             placeholder: 'Test',
-            name: 'test'
+            class: 'test',
+            name: 'test',
           },
           takes_children: false
         },
@@ -62,7 +65,7 @@ export default {
         'Wrapper': {
           element: 'div',
           attributes: {
-            className: 'fc-row'
+            class: ['b', 'c'],
           },
           takes_children: true
         }
