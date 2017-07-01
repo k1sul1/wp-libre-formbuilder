@@ -3,22 +3,51 @@
     <draggable
       class="wplfb-sandbox__playfield"
       :options="{group: {name: 'fields', put: true }}"
+      :list="formList"
+      @move="moveHandler"
     >
       <p>Drag fields into me!</p>
+      <template v-for="(value, key) in store.state.tree">
+        <!-- <header>{{ key }}</header> -->
+        <!-- <pre>{{ value.attributes }}</pre> -->
+        <wplfb-field
+          :name="key"
+          :fieldData="value"
+          :element="value.element"
+          :attributes="value.attributes"
+          :takesChildren="value.takesChildren"
+          :removeHandler="removeHandler"
+          :moveHandler="moveHandler"
+          :startHandler="startHandler"
+          :endHandler="endHandler"
+          :cloneHandler="cloneHandler"
+        >
+          <!-- Children will be placed here -->
+        </wplfb-field>
+      </template>
     </draggable>
 
     <draggable
       class="wplfb-sandbox__tools"
       :options="{group: {name: 'fields', pull: 'clone', put: false }}"
+      @move="moveHandler"
+      @end="endHandler"
+      @clone="cloneHandler"
     >
       <template v-for="(value, key) in fields">
         <!-- <header>{{ key }}</header> -->
         <!-- <pre>{{ value.attributes }}</pre> -->
         <wplfb-field
-          v-bind:name="key"
-          v-bind:element="value.element"
-          v-bind:attributes="value.attributes"
-          v-bind:takes_children="value.takes_children"
+          :name="key"
+          :fieldData="value"
+          :element="value.element"
+          :attributes="value.attributes"
+          :takesChildren="value.takesChildren"
+          :removeHandler="removeHandler"
+          :moveHandler="moveHandler"
+          :startHandler="startHandler"
+          :endHandler="endHandler"
+          :cloneHandler="cloneHandler"
         >
           <!-- Children will be placed here -->
         </wplfb-field>
@@ -31,23 +60,92 @@
 import field from './Field';
 import draggable from 'vuedraggable';
 
+let formList = [];
+window.formList = formList;
+
+const store = {
+  debug: true,
+  state: {
+    tree: {
+
+    },
+    currentMove: {
+
+    }
+  },
+
+  updateTree(newTree) {
+    this.debug && console.log('Update tree', newTree);
+    this.state.tree = newTree;
+  },
+
+  updateMove(fieldData) {
+    this.debug && console.log('Update move', fieldData);
+    this.state.currentMove = fieldData;
+  }
+};
+
 export default {
   name: 'builder',
   components: {
     draggable,
     'wplfb-field': field
   },
-  /* computed: {
-    tree: {
-      get() {
-        return this.$store.state.tree;
-      },
 
-      set(value) {
-        this.$store.commit('updateTree', value);
-      }
+  beforeMount() {
+    let base;
+    if (window.location.port !== 80 || window.location.port !== 443) {
+      base = window.REST_URL; // Defined in index.html
+    } else {
+      base = '';
     }
-  }, */
+
+    fetch(`${base}/wp-json/wplfb/forms/form`)
+      .then(r => r.json())
+      .then(r => {
+        const { fields } = r;
+        store.updateTree(JSON.parse(fields));
+      })
+      .catch(err => {
+        throw err;
+      });
+  },
+
+  methods: {
+    preventDrag(e) {
+      console.log(e);
+      return false;
+    },
+
+    removeHandler() {
+      console.log('Remove!');
+    },
+
+    startHandler() {
+      store.updateMove(this.fieldData);
+      console.log('Start!');
+    },
+
+    moveHandler(event) {
+      const { draggedContext, relatedContext } = event;
+
+      console.log('Move!', draggedContext, relatedContext);
+    },
+
+    endHandler(event) {
+      console.log(event);
+      store.updateTree();
+    },
+
+    cloneHandler() {
+      console.log(this);
+      console.log('Clone!');
+    },
+
+    changeHandler(added, removed, moved) {
+
+    }
+  },
   data () {
     return {
       fields: {
@@ -59,7 +157,7 @@ export default {
             class: 'test',
             name: 'test',
           },
-          takes_children: false
+          takesChildren: false
         },
 
         'Wrapper': {
@@ -67,9 +165,11 @@ export default {
           attributes: {
             class: ['b', 'c'],
           },
-          takes_children: true
+          takesChildren: true
         }
-      }
+      },
+
+      store,
     };
   }
 };

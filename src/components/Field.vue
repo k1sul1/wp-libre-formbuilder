@@ -1,11 +1,6 @@
 <script>
 import draggable from 'vuedraggable';
 
-const removeField = (event) => {
-  console.log('test');
-  console.log(event.target);
-};
-
 export default {
   name: 'wplfb-field',
   components: { draggable },
@@ -16,23 +11,20 @@ export default {
         put: true
       }
     };
-    const children = this.takes_children
+    const children = this.takesChildren
       ? (
-        <draggable class="wplfb-field__children" options={options}>
+        <draggable
+          class="wplfb-field__children"
+          options={options}
+          { ... { on: { move: this.moveHandler, end: this.endHandler } } }
+        >
           {this.$slots.default}
         </draggable>
       )
       : false;
 
-    /* Tried, no luck:
-        Object.keys(this.attributes).map(key => {
-          const value = this.attributes[key];
-          return `${key}=${value}`;
-        })
-    */
-
     // proposed: https://github.com/vuejs/Discussion/issues/292
-    // const attributes = JSON.parse(JSON.stringify(this.attributes));
+    // const attributes = JSON.parse(JtakesChildrenthis.attributes));
 
     // Less hacky.
     const attributes = Object.keys(this.attributes).reduce((attrs, key) => {
@@ -40,39 +32,47 @@ export default {
       return { ...attrs, [key]: value };
     }, {});
 
-    console.log(attributes);
-
-    return (
-      <div class="wplfb-field">
-        <header class="wplfb-field__header">
-          <span class="wplfb-field__header--text">{this.name}</span>
-          <div class="wplfb-field__header--tools">
-            <button class="remove" onclick={() => removeField()}>
-              &times;
-            </button>
-          </div>
-        </header>
-        <div class="wplfb-field__fieldwrap">
-          <this.element
-            is={this.element}
-            {...{attrs: attributes}}
-          >
-            {children}
-          </this.element>
+    const element = (
+    <div class="wplfb-field"
+      { ...{ on: { start: this.startHandler } } }>
+      <header class="wplfb-field__header">
+        <span class="wplfb-field__header--text">{this.name}</span>
+        <div class="wplfb-field__header--tools">
+          <button class="remove" { ...{ on: { click: this.removeHandler } } }>
+            &times;
+          </button>
         </div>
+      </header>
+    <div class="wplfb-field__fieldwrap">
+      <this.element
+        is={this.element}
+        {...{attrs: attributes}}
+      >
+        {children}
+      </this.element>
+    </div>
       </div>
     );
+
+    element.fieldData = { name: this.name, data: this.fieldData };
+    console.log(element);
+
+    return element;
   },
   props: {
     name: {
       type: String,
       required: true,
     },
+    fieldData: {
+      type: Object,
+      required: true,
+    },
     element: {
       type: String,
       required: true,
     },
-    takes_children: {
+    takesChildren: {
       type: Boolean,
       required: true,
     },
@@ -80,7 +80,26 @@ export default {
       type: Object,
       required: false,
     },
-
+    removeHandler: {
+      type: Function,
+      required: true,
+    },
+    startHandler: {
+      type: Function,
+      required: true,
+    },
+    moveHandler: {
+      type: Function,
+      required: true,
+    },
+    endHandler: {
+      type: Function,
+      required: true,
+    },
+    cloneHandler: {
+      type: Function,
+      required: true,
+    },
   },
 };
 </script>
