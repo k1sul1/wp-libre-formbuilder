@@ -53,15 +53,25 @@
         </wplfb-field>
       </template>
     </draggable>
+
+    <wplfb-notification v-if="store.state.notification.show" :msg="store.state.notification.text" :type="store.state.notification.type" />
   </div>
 </template>
 
 <script>
 import field from './Field';
+import notification from './Notification';
 import draggable from 'vuedraggable';
 
 let formList = [];
 window.formList = formList;
+
+let base;
+if (window.location.port !== 80 || window.location.port !== 443) {
+  base = window.REST_URL; // Defined in index.html
+} else {
+  base = '';
+}
 
 const store = {
   debug: true,
@@ -71,35 +81,75 @@ const store = {
     },
     currentMove: {
 
-    }
+    },
+    notification: {
+      show: false,
+      text: undefined,
+      type: undefined,
+    },
   },
 
-  updateTree(newTree) {
+  getTree() {
+    return this.state.tree;
+  },
+
+  updateTree(newTree, cb) {
     this.debug && console.log('Update tree', newTree);
     this.state.tree = newTree;
+
+    cb && cb(newTree);
   },
 
-  updateMove(fieldData) {
+  updateMove(fieldData, cb) {
     this.debug && console.log('Update move', fieldData);
     this.state.currentMove = fieldData;
+
+    cb && cb(fieldData);
+  },
+
+  showNotification(msg, type) {
+    this.debug && console.log('Show notification', msg);
+
+    this.state.notification.show = true;
+    this.state.notification.text = msg;
+    this.state.notification.type = 'success';
+
+    setTimeout(() => {
+      this.state.notification.show = false;
+    }, 2500);
   }
+};
+
+const saveForm = () => {
+  fetch(`${base}/wp-json/wplfb/forms/form`, {
+    method: 'POST',
+    body: JSON.stringify(store.getTree()),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+    .then(r => r.json())
+    .then(r => {
+      if (!r.error) {
+        this.notifyOfSuccess(r.success);
+      } else {
+        this.notifyOfError(r.error);
+      }
+    })
+    .catch(err => {
+      this.notifyOfError(err);
+    });
 };
 
 export default {
   name: 'builder',
   components: {
     draggable,
-    'wplfb-field': field
+    'wplfb-field': field,
+    'wplfb-notification': notification,
   },
 
   beforeMount() {
-    let base;
-    if (window.location.port !== 80 || window.location.port !== 443) {
-      base = window.REST_URL; // Defined in index.html
-    } else {
-      base = '';
-    }
-
     fetch(`${base}/wp-json/wplfb/forms/form`)
       .then(r => r.json())
       .then(r => {
@@ -109,6 +159,10 @@ export default {
       .catch(err => {
         throw err;
       });
+
+    setTimeout(() => {
+      store.showNotification('test', 'success');
+    }, 2500);
   },
 
   methods: {
@@ -133,8 +187,11 @@ export default {
     },
 
     endHandler(event) {
+      console.log('end');
       console.log(event);
-      store.updateTree();
+
+      const newTree = {};
+      store.updateTree(newTree, saveForm);
     },
 
     cloneHandler() {
