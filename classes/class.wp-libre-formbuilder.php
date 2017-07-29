@@ -53,11 +53,9 @@ class WP_Libre_Formbuilder {
 
   public function tamperMetaBoxes() {
     add_meta_box(
-      "wplfb_metabox",
-      "Form builder",
+      "wplfb_field_options",
+      "Field options",
       function($post) {
-        ?>
-        <?php
         var_dump($post);
       },
       "wplfb-field",
