@@ -77,6 +77,13 @@ class WP_Libre_Formbuilder {
   }
 
   public function registerRESTRoutes() {
+    register_rest_route("wplfb", "/fields", [
+      "methods" => "GET",
+      "callback" => function (WP_REST_Request $request) {
+        return $this->getFields($request);
+      },
+    ]);
+
     register_rest_route("wplfb", "/forms/form", [
       "methods" => "GET",
       "callback" => function (WP_REST_Request $request) {
