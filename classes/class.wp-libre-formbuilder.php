@@ -243,6 +243,8 @@ class WP_Libre_Formbuilder {
   }
 
   public function generateHTML($json = '') {
+    // This is absolutely horrible and was written in about 30 seconds for a poc.
+    // Rewrite completely.
     $obj = json_decode($json);
     $shorts = ["br", "img"]; // Add all.
     $html = "";
