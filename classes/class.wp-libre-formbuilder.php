@@ -5,6 +5,7 @@ class WP_Libre_Formbuilder {
   const FORM_SAVED = 'Form saved succesfully.';
 
   public static $instance;
+  public $fields;
 
   public static function instance() {
     if (is_null(self::$instance)) {
@@ -146,6 +147,99 @@ class WP_Libre_Formbuilder {
       ]);
     }
 
+  }
+
+  public function getField(WP_REST_Request $request) {
+
+  }
+
+  public function getFields(WP_REST_Request $request) {
+    $codefields = apply_filters("wplfb-available-code-fields", $this->fields);
+    // Pass later later with callback; does not contain fields from DB
+
+    // Querying the DB is expensive, so fields from the DB are not loaded until necessary.
+    $plist = get_posts(["post_type" => "wplfb-field", "posts_per_page" => -1]);
+    foreach ($plist as $p) {
+      $ok = $this->addField([
+        "key" => $p->ID,
+        "name" => $p->post_title,
+        "html" => $p->post_content,
+        "children" => get_post_meta($p->ID, "wplfb-field-children", true)
+      ]);
+
+      if (!$ok) {
+        // The key already exists; do not add it again or overwrite it.
+        // Combine with a huge notice in field edit page.
+        update_post_meta($p->ID, "wplfb-field-override", true);
+      } else {
+        // I'd love to store the DOM in meta ($ok["dom"]) but I do not want to do it every time.
+
+      }
+    }
+
+    // Allow user to filter the result.
+    $fields = apply_filters("wplfb-available-fields", $this->fields, $codefields);
+
+    return new WP_REST_Response([
+      "fields" => $fields,
+    ]);
+  }
+
+  public function addField($data = []) {
+    if (empty($data)) {
+      throw new Exception("You must supply the field data");
+    } else if (empty($data["key"])) {
+      throw new Exception("Field key is mandatory. Numerical keys *will* override database entries.");
+    } else if (empty($data["name"])) {
+      throw new Exception("Field name is mandatory");
+    } else if (empty($data["html"])) {
+      throw new Exception("Field html is mandatory");
+    } else if (!isset($data["children"])) {
+      throw new Exception("You must spesify whether the field takes children");
+    }
+
+    if (!empty($this->fields[$data["key"]])) {
+      return false;
+    }
+
+    $this->fields[$data["key"]] = [
+      "name" => apply_filters("wplfb-field-name", $data["name"], $data),
+      "html" => apply_filters("wplfb-field-html", $data["html"], $data),
+      "dom" => apply_filters("wplfb-field-dom", $this->generateDOM($data["html"]), $data),
+      "children" => apply_filters("wplfb-field-children", \WPLFB\booleanify($data["children"]), $data),
+    ]; // PHP casts it into an array if it's null.
+
+    return $this->fields[$data["key"]];
+  }
+
+  public function generateDOM($html = '') {
+    $DOM = new DOMDocument();
+    $DOM->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+    $parseNode = function($node, $parseNode) {
+      $parseAttrs = function($el){
+        $attrs = false;
+
+        if ($el->attributes) {
+          $attrs = [];
+          foreach ($el->attributes as $attr) {
+            $attrs[$attr->name] = $attr->value;
+          }
+        }
+
+        return $attrs;
+      };
+
+
+      return [
+        "element" => !empty($node->tagName) ? $node->tagName : "TextNode",
+        "textContent" => !empty($node->textContent) ? $node->textContent : false,
+        "attributes" => $parseAttrs($node),
+        "children" => $node->firstChild ? $parseNode($node->firstChild, $parseNode) : false,
+      ];
+    };
+
+    return $parseNode($DOM->firstChild, $parseNode);
   }
 
   public function generateHTML($json = '') {
