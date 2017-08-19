@@ -19,7 +19,7 @@ class WP_Libre_Formbuilder {
     add_action("init", [$this, "registerCPT"]);
 
     add_filter("user_can_richedit", function($x) {
-      if ($GLOBALS["post"]->post_type === "wplfb-field") {
+      if (isset($GLOBALS["post"]) && $GLOBALS["post"]->post_type === "wplfb-field") {
         return false;
       }
 
