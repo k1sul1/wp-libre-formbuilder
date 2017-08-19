@@ -31,7 +31,7 @@ function booleanify($data) {
     }
   }
 
-  throw new Exception("Unable to transform $data into boolean");
+  throw new \Exception("Unable to transform $data into boolean");
 }
 
 
