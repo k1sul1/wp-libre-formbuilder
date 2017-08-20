@@ -154,7 +154,7 @@ class WP_Libre_Formbuilder {
   }
 
   public function saveForm(WP_REST_Request $request) {
-    $form_id = 55; // Temp.
+    $form_id = $request->get_param("form_id");
 
     // Do not check for null. Create a new one.
     // if (is_null($form_id)) {

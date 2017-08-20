@@ -1,9 +1,16 @@
 <template>
   <div class="wplfb-sandbox">
+    <div class="wplfb-sandbox__formselect">
+      <select name="formselect" @change="() => changeForm()">
+        <option v-for="form in store.state.forms" :value="form.form.ID">
+          {{ form.form.post_name }}
+        </option>
+        <option value="0">New</option>
+      </select>
+    </div>
     <draggable
       class="wplfb-sandbox__playfield"
       :options="{group: {name: 'fields', put: true }}"
-      :list="formList"
       @move="moveHandler"
     >
       <p>Drag fields into me!</p>
@@ -63,9 +70,6 @@ import field from './Field';
 import notification from './Notification';
 import draggable from 'vuedraggable';
 
-let formList = [];
-window.formList = formList;
-
 let base;
 if (window.location.port !== 80 || window.location.port !== 443) {
   base = window.REST_URL; // Defined in index.html
@@ -76,9 +80,13 @@ if (window.location.port !== 80 || window.location.port !== 443) {
 const store = {
   debug: true,
   state: {
+    form_id: undefined,
     tree: {
 
     },
+    forms: [
+
+    ],
     currentMove: {
 
     },
@@ -91,6 +99,20 @@ const store = {
 
   getTree() {
     return this.state.tree;
+  },
+
+  addForm(form, cb) {
+    this.debug && console.log('Adding form', form);
+    this.state.forms.push(form);
+
+    cb && cb(form);
+  },
+
+  updateFormID(id, cb) {
+    this.debug && console.log('Update form_id', id);
+    this.state.form_id = id;
+
+    cb && cb(id);
   },
 
   updateTree(newTree, cb) {
@@ -121,6 +143,7 @@ const store = {
 };
 
 const saveForm = () => {
+  console.log('does this run');
   fetch(`${base}/wp-json/wplfb/forms/form`, {
     method: 'POST',
     body: JSON.stringify(store.getTree()),
@@ -130,6 +153,7 @@ const saveForm = () => {
   })
     .then(r => r.json())
     .then(r => {
+      console.log(r);
       if (!r.error) {
         this.notifyOfSuccess(r.success);
       } else {
@@ -137,6 +161,7 @@ const saveForm = () => {
       }
     })
     .catch(err => {
+      console.log(err);
       this.notifyOfError(err);
     });
 };
@@ -150,11 +175,10 @@ export default {
   },
 
   beforeMount() {
-    fetch(`${base}/wp-json/wplfb/forms/form`)
+    fetch(`${base}/wp-json/wplfb/forms/forms`)
       .then(r => r.json())
       .then(r => {
-        const { fields } = r;
-        store.updateTree(JSON.parse(fields));
+        r.forEach(store.addForm.bind(store));
       })
       .catch(err => {
         throw err;
@@ -219,7 +243,25 @@ export default {
 
     changeHandler(added, removed, moved) {
 
-    }
+    },
+
+    changeForm() {
+      const select = this.$el.querySelector('select[name="formselect"]');
+      const value = parseInt(select.value, 10);
+
+      if (value !== 0) {
+        store.updateFormID(value);
+        fetch(`${base}/wp-json/wplfb/forms/form?form_id=${value}`)
+          .then(r => r.json())
+          .then(r => {
+            const { fields } = r;
+            store.updateTree(JSON.parse(fields));
+          })
+          .catch(err => {
+            throw err;
+          });
+      }
+    },
   },
   data () {
     return {
