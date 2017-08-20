@@ -26,6 +26,13 @@ class WP_Libre_Formbuilder {
       return $x;
     });
 
+    add_action("save_post", function($post_id, $post) {
+      if ($post->post_type === "wplfb-field") {
+        $children = !isset($_POST["wplfb-field-children"]) ? 0 : $_POST["wplfb-field-children"];
+        update_post_meta($post_id, "wplfb-field-children", $children);
+      }
+    }, 10, 2);
+
     add_action("add_meta_boxes", [$this, "tamperMetaBoxes"]);
     add_action("rest_api_init", [$this, "registerRESTRoutes"]);
   }
@@ -57,6 +64,12 @@ class WP_Libre_Formbuilder {
       "wplfb_field_options",
       "Field options",
       function($post) {
+      ?>
+      <label>
+      <input type="checkbox" name="wplfb-field-children" value="1" <?=checked(1, get_post_meta($post->ID, "wplfb-field-children", true))?>>
+        Field accepts children
+      </label>
+      <?php
         var_dump($post);
       },
       "wplfb-field",
