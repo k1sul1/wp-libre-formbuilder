@@ -98,6 +98,13 @@ class WP_Libre_Formbuilder {
       },
     ]);
 
+    register_rest_route("wplfb", "/forms/forms", [
+      "methods" => "GET",
+      "callback" => function (WP_REST_Request $request) {
+        return $this->getForms($request);
+      },
+    ]);
+
     register_rest_route("wplfb", "/forms/form", [
       "methods" => "GET",
       "callback" => function (WP_REST_Request $request) {
@@ -111,6 +118,23 @@ class WP_Libre_Formbuilder {
         return $this->saveForm($request);
       },
     ]);
+  }
+
+  public function getForms(WP_REST_Request $request) {
+    // require auth for this
+    $plist = get_posts([
+      "post_type" => "wplf-form",
+      "posts_per_page" => -1
+    ]);
+
+    foreach ($plist as $p) {
+      $result[] = [
+        "form" => $p,
+        "fields" => get_post_meta($p->ID, "wplfb_fields", true)
+      ];
+    }
+
+    return new WP_REST_Response($result);
   }
 
   public function getForm(WP_REST_Request $request) {
@@ -177,7 +201,7 @@ class WP_Libre_Formbuilder {
         "key" => $p->ID,
         "name" => $p->post_title,
         "html" => $p->post_content,
-        "children" => get_post_meta($p->ID, "wplfb-field-children", true)
+        "takesChildren" => \WPLFB\booleanify(get_post_meta($p->ID, "wplfb-field-children", true))
       ]);
 
       if (!$ok) {
@@ -207,7 +231,7 @@ class WP_Libre_Formbuilder {
       throw new Exception("Field name is mandatory");
     } else if (empty($data["html"])) {
       throw new Exception("Field html is mandatory");
-    } else if (!isset($data["children"])) {
+    } else if (!isset($data["takesChildren"])) {
       throw new Exception("You must spesify whether the field takes children");
     }
 
@@ -219,7 +243,7 @@ class WP_Libre_Formbuilder {
       "name" => apply_filters("wplfb-field-name", $data["name"], $data),
       "html" => apply_filters("wplfb-field-html", $data["html"], $data),
       "dom" => apply_filters("wplfb-field-dom", $this->generateDOM($data["html"]), $data),
-      "children" => apply_filters("wplfb-field-children", \WPLFB\booleanify($data["children"]), $data),
+      "takesChildren" => apply_filters("wplfb-field-children", \WPLFB\booleanify($data["takesChildren"]), $data),
     ]; // PHP casts it into an array if it's null.
 
     return $this->fields[$data["key"]];

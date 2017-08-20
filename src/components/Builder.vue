@@ -160,6 +160,24 @@ export default {
         throw err;
       });
 
+    fetch(`${base}/wp-json/wplfb/fields`)
+      .then(r => r.json())
+      .then(r => {
+        Object.keys(r.fields).forEach(key => {
+          const value = r.fields[key];
+
+          console.log(key, value);
+          this.$set(this.fields, value.name, {
+            attributes: value.dom.attributes,
+            element: value.dom.element,
+            takesChildren: value.takesChildren,
+          });
+        });
+      })
+      .catch(err => {
+        throw err;
+      });
+
     setTimeout(() => {
       store.showNotification('test', 'success');
     }, 2500);
@@ -206,7 +224,7 @@ export default {
   data () {
     return {
       fields: {
-        'Text': {
+        /* 'Text': {
           element: 'input',
           attributes: {
             type: 'text',
@@ -223,7 +241,7 @@ export default {
             class: ['b', 'c'],
           },
           takesChildren: true
-        }
+        } */
       },
 
       store,
