@@ -260,7 +260,12 @@ class WP_Libre_Formbuilder {
         if ($el->attributes) {
           $attrs = [];
           foreach ($el->attributes as $attr) {
-            $attrs[$attr->name] = $attr->value;
+            // `class` and `for` attributes cause trouble in React, rewrite them *there*, not here.
+            // if (strtolower($attr->name) === "class") {
+              // $attrs[$attr->name] = $attr->value;
+            // } else {
+              $attrs[$attr->name] = $attr->value;
+            // }
           }
         }
 
