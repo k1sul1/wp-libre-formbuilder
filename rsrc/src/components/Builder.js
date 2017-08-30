@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import Dragula from 'react-dragula';
 
 import Field from './Field';
@@ -66,6 +67,31 @@ class Builder extends Component {
       });
   }
 
+  componentDidMount() {
+    const component = ReactDOM.findDOMNode(this);
+    const workbench = component.querySelector(`.${builderStyle.workbench}`);
+    const sidebar = component.querySelector(`.${builderStyle.sidebar}`);
+
+    Dragula([workbench], {});
+    Dragula([sidebar], {
+      isContainer(el) {
+        if (el === workbench) {
+          return true;
+        }
+
+        return false;
+      },
+      accepts(el, target, source, sibling) {
+        if (source === workbench) {
+          return false;
+        }
+
+        return true;
+      },
+      copy: true
+    });
+  }
+
   render() {
     return (
       <div className={builderStyle.wrapper}>
@@ -79,13 +105,23 @@ class Builder extends Component {
           <option value="0">New</option>
         </select>
       </header>
-      <div className={builderStyle.workbench}>
-        Push into me
-      </div>
+      <div className={builderStyle.workbench}></div>
 
       <aside className={builderStyle.sidebar}>
         {this.state.available_fields.map((field, key) => {
-          // console.log(field);
+
+          if (field.attributes.class) {
+            field.attributes.className = field.attributes.class;
+            delete field.attributes.class;
+          }
+
+          if (field.attributes.for) {
+            field.attributes.htmlFor = field.attributes.for;
+            delete field.attributes.for;
+          }
+
+          console.log(field.attributes);
+
           return <Field
             tagName={field.tagName}
             attributes={field.attributes}
