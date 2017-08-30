@@ -46,7 +46,7 @@ class Builder extends Component {
           const value = r.fields[key];
 
           this.setState(prev => ({
-            available_fields: [...prev, {
+            available_fields: [...prev.available_fields, {
                 tagName: value.dom.element,
                 attributes: value.dom.attributes,
                 takesChildren: value.takesChildren,
@@ -120,14 +120,12 @@ class Builder extends Component {
             delete field.attributes.for;
           }
 
-          console.log(field.attributes);
-
-          return <Field
+          return (<Field
             tagName={field.tagName}
             attributes={field.attributes}
             takesChildren={field.takesChildren}
             key={key}
-          />
+          />);
         })}
       </aside>
     </div>
