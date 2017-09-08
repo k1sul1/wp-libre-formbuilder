@@ -52,7 +52,7 @@ add_action("admin_enqueue_scripts", function() {
   wp_enqueue_script("wplfb-js", $path . "js/app.{$version}.js", ["wplfb-vendorjs"], null, true);
 });
 
-require_once "vendor/autoload.php";
+// require_once "vendor/autoload.php";
 require_once "helpers.php";
 require_once "classes/class.wp-libre-formbuilder.php";
 WP_Libre_Formbuilder::instance();
