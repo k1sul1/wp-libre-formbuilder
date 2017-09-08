@@ -50,16 +50,10 @@ class Builder extends Component {
                 tagName: value.dom.element,
                 attributes: value.dom.attributes,
                 takesChildren: value.takesChildren,
+                childrenHTML: value.dom.children_html
               },
             ]
           }));
-
-          // console.log(key, value);
-          /* this.$set(this.fields, value.name, {
-            attributes: value.dom.attributes,
-            element: value.dom.element,
-            takesChildren: value.takesChildren,
-          }); */
         });
       })
       .catch(err => {
@@ -68,19 +62,30 @@ class Builder extends Component {
   }
 
   componentDidMount() {
-    const component = ReactDOM.findDOMNode(this);
-    const workbench = component.querySelector(`.${builderStyle.workbench}`);
-    const sidebar = component.querySelector(`.${builderStyle.sidebar}`);
+    const workbench = this.refs.workbench;
+    const sidebar = this.refs.sidebar;
 
-    Dragula([workbench], {});
-    Dragula([sidebar], {
+    const sharedOptions = {
+      // moves(el, container, target) {
+        // return target.classList.contains('handle');
+      // },
+    };
+
+    const workbenchOptions = Object.assign({}, sharedOptions, {
+
+    });
+
+    const sidebarOptions = Object.assign({}, sharedOptions, {
       isContainer(el) {
         if (el === workbench) {
+          return true;
+        } else if (el.classList.contains('wplfb-child-container')) {
           return true;
         }
 
         return false;
       },
+
       accepts(el, target, source, sibling) {
         if (source === workbench) {
           return false;
@@ -88,8 +93,20 @@ class Builder extends Component {
 
         return true;
       },
+
       copy: true
     });
+
+    const dragulas = {
+      workbench: Dragula([workbench], workbenchOptions),
+      sidebar: Dragula([sidebar], sidebarOptions),
+    };
+
+    this.setState(prev => ({dragulas}));
+  }
+
+  enableDragInChild() {
+    console.log(this.state).bind(this);
   }
 
   render() {
@@ -105,9 +122,9 @@ class Builder extends Component {
           <option value="0">New</option>
         </select>
       </header>
-      <div className={builderStyle.workbench}></div>
+      <div className={builderStyle.workbench} ref="workbench"></div>
 
-      <aside className={builderStyle.sidebar}>
+      <aside className={builderStyle.sidebar} ref="sidebar">
         {this.state.available_fields.map((field, key) => {
 
           if (field.attributes.class) {
@@ -120,12 +137,16 @@ class Builder extends Component {
             delete field.attributes.for;
           }
 
-          return (<Field
+          return <Field
             tagName={field.tagName}
             attributes={field.attributes}
             takesChildren={field.takesChildren}
             key={key}
-          />);
+            key2={key}
+            dragulas={this.state.dragulas}
+          >
+            {field.childrenHTML}
+          </Field>;
         })}
       </aside>
     </div>

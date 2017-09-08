@@ -7,7 +7,8 @@
     "normalize.css": "^7.0.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
-    "react-dragula": "^1.1.17"
+    "react-dragula": "^1.1.17",
+    "react-html-parser": "^2.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
