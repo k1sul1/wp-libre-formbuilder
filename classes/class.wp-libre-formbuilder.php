@@ -253,7 +253,7 @@ class WP_Libre_Formbuilder {
     $DOM = new DOMDocument();
     $DOM->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
-    $parseNode = function($node, $parseNode) { // We have to pass the function as the second param or it isn't in scope.
+    $parseNode = function($node, $parseNode) use ($DOM) { // We have to pass the function as the second param or it isn't in scope.
       $parseAttrs = function($el){
         $attrs = false;
 
@@ -278,6 +278,7 @@ class WP_Libre_Formbuilder {
         "textContent" => !empty($node->textContent) ? $node->textContent : false,
         "attributes" => $parseAttrs($node),
         "children" => $node->firstChild ? $parseNode($node->firstChild, $parseNode) : false, // And again. Gotta love PHP?
+        "children_html" => $node->firstChild ? $DOM->saveHTML($node->firstChild) : false,
       ];
     };
 
