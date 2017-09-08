@@ -133,8 +133,8 @@ const store = {
     this.debug && console.log('Show notification', msg);
 
     this.state.notification.show = true;
-    this.state.notification.text = msg;
-    this.state.notification.type = 'success';
+    this.state.notification.text = String(msg); // Or else numbers won't work.
+    this.state.notification.type = type;
 
     setTimeout(() => {
       this.state.notification.show = false;
@@ -143,8 +143,13 @@ const store = {
 };
 
 const saveForm = () => {
-  console.log('does this run');
-  fetch(`${base}/wp-json/wplfb/forms/form`, {
+  console.log('Saving form');
+
+  const url = store.state.form_id
+    ? `${base}/wp-json/wplfb/forms/form/${store.state.form_id}`
+    : `${base}/wp-json/wplfb/forms/form`;
+
+  fetch(url, {
     method: 'POST',
     body: JSON.stringify(store.getTree()),
     headers: {
@@ -154,15 +159,15 @@ const saveForm = () => {
     .then(r => r.json())
     .then(r => {
       console.log(r);
-      if (!r.error) {
-        this.notifyOfSuccess(r.success);
+      if ('success' in r) {
+        store.showNotification(r.success, 'success');
       } else {
-        this.notifyOfError(r.error);
+        store.showNotification(r.error, 'error');
       }
     })
     .catch(err => {
       console.log(err);
-      this.notifyOfError(err);
+      store.showNotification(err, 'error');
     });
 };
 
@@ -201,10 +206,6 @@ export default {
       .catch(err => {
         throw err;
       });
-
-    setTimeout(() => {
-      store.showNotification('test', 'success');
-    }, 2500);
   },
 
   methods: {
