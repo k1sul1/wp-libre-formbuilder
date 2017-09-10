@@ -138,17 +138,18 @@ class WP_Libre_Formbuilder {
   }
 
   public function getForm(WP_REST_Request $request) {
-    $form_id = 55; // Temp.
+    $form_id = $request->get_param("form_id");
+
     if (is_null($form_id)) {
       return new WP_REST_Response([
         "error" => self::ERR_FORM_ID_EMPTY
       ]);
     }
 
-    $p = get_post($form_id);
+    $p = get_post((int) $form_id);
 
     return new WP_REST_Response([
-      "post" => $p,
+      "form" => $p,
       "fields" => get_post_meta($p->ID, "wplfb_fields", true)
     ]);
   }
@@ -201,7 +202,7 @@ class WP_Libre_Formbuilder {
         "key" => $p->ID,
         "name" => $p->post_title,
         "html" => $p->post_content,
-        "takesChildren" => \WPLFB\booleanify(get_post_meta($p->ID, "wplfb-field-children", true))
+        "takesChildren" => \WPLFB\booleanify(get_post_meta($p->ID, "wplfb-field-children", true)),
       ]);
 
       if (!$ok) {
@@ -244,6 +245,7 @@ class WP_Libre_Formbuilder {
       "html" => apply_filters("wplfb-field-html", $data["html"], $data),
       "dom" => apply_filters("wplfb-field-dom", $this->generateDOM($data["html"]), $data),
       "takesChildren" => apply_filters("wplfb-field-children", \WPLFB\booleanify($data["takesChildren"]), $data),
+      "wplfbKey" => $data["key"],
     ]; // PHP casts it into an array if it's null.
 
     return $this->fields[$data["key"]];
