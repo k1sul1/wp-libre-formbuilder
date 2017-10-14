@@ -130,7 +130,10 @@ class Builder extends Component {
       },
 
       accepts(el, target, source, sibling) {
+        // console.log(target === workbench, target.classList);
         if (source === workbench) {
+          return false;
+        } else if (!el.classList.contains(fieldStyle.wrapper)) {
           return false;
         }
 
