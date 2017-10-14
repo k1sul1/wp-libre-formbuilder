@@ -116,6 +116,7 @@ class Builder extends Component {
     };
 
     const workbenchOptions = Object.assign({}, sharedOptions, {
+      copy: false,
     });
 
     const sidebarOptions = Object.assign({}, sharedOptions, {
@@ -130,7 +131,6 @@ class Builder extends Component {
       },
 
       accepts(el, target, source, sibling) {
-        // console.log(target === workbench, target.classList);
         if (source === workbench) {
           return false;
         } else if (!el.classList.contains(fieldStyle.wrapper)) {
@@ -182,13 +182,13 @@ class Builder extends Component {
         const isRoot = target === this.workbench;
         const children = childContainer ? childContainer.children : [];
 
-        console.log(target, children);
         if (sibling) {
           // put into correct place
         } else {
           // still do so
         }
 
+        const oldEl = source.querySelector(`#${id}`);
 
         startedDragFromSidebar = false;
 
@@ -198,6 +198,18 @@ class Builder extends Component {
           const exists = Boolean(tree[id]);
           const field = exists ? tree[id] : this.state.available_fields
             .find((field) => field.wplfbKey === el.getAttribute('data-wplfbkey'));
+
+          if (oldEl) {
+            delete tree[oldEl.id];
+            Object.keys(tree).forEach((key) => {
+              let childIndex = tree[key].children.indexOf(oldEl.id)
+              if (childIndex > -1) {
+                console.log('found id from children', key);
+                tree[key].children.splice(childIndex, 1);
+              }
+            });
+            oldEl.remove();
+          }
 
           if (!isRoot) {
             console.log('not root', target);
