@@ -90,12 +90,12 @@ class Builder extends Component {
 
           this.setState(prev => ({
             available_fields: [...prev.available_fields, {
-                tagName: value.dom.element,
-                attributes: value.dom.attributes,
-                takesChildren: value.takesChildren,
-                childrenHTML: value.dom.children_html,
-                wplfbKey: value.wplfbKey,
-              },
+              tagName: value.dom.element,
+              attributes: value.dom.attributes,
+              takesChildren: value.takesChildren,
+              childrenHTML: value.dom.children_html,
+              wplfbKey: value.wplfbKey,
+            },
             ]
           }));
         });
@@ -110,16 +110,6 @@ class Builder extends Component {
     const sidebar = this.sidebar;
 
     const sharedOptions = {
-      // moves(el, container, target) {
-        // return target.classList.contains('handle');
-      // },
-    };
-
-    const workbenchOptions = Object.assign({}, sharedOptions, {
-      copy: false,
-    });
-
-    const sidebarOptions = Object.assign({}, sharedOptions, {
       isContainer(el) {
         if (el === workbench) {
           return true;
@@ -131,7 +121,19 @@ class Builder extends Component {
       },
 
       accepts(el, target, source, sibling) {
+        if (target === source) {
+          return false;
+        }
+
+        if (target.closest(`#${el.id}`)) {
+          return false;
+        }
+
         if (source === workbench) {
+          if (target.classList.contains('wplfb-child-container')) {
+            return true;
+          }
+
           return false;
         } else if (!el.classList.contains(fieldStyle.wrapper)) {
           return false;
@@ -140,7 +142,21 @@ class Builder extends Component {
         return true;
       },
 
-      copy: true
+      invalid(el, handle) {
+        if (!handle.classList.contains(fieldStyle.header)) {
+          return true;
+        }
+
+        return false;
+      },
+    };
+
+    const workbenchOptions = Object.assign({}, sharedOptions, {
+      copy: false,
+    });
+
+    const sidebarOptions = Object.assign({}, sharedOptions, {
+      copy: true,
     });
 
     const dragulas = {
@@ -148,22 +164,9 @@ class Builder extends Component {
       sidebar: Dragula([sidebar], sidebarOptions),
     };
 
-    let startedDragFromSidebar = false;
 
-    dragulas.sidebar.on('drag', () => {
-      startedDragFromSidebar = true;
-    });
-
-    dragulas.workbench.on('drag', () => {
-      // console.log('drag');
-    });
-
-    dragulas.workbench.on('drop', () => {
-      // console.log('drop');
-    });
-
-    dragulas.sidebar.on('drop', (el, target, source, sibling) => {
-      if (startedDragFromSidebar) {
+    Object.keys(dragulas).forEach((d) => {
+      dragulas[d].on('drop', (el, target, source, sibling) => {
         if (!target) {
           return false;
         }
@@ -190,8 +193,6 @@ class Builder extends Component {
 
         const oldEl = source.querySelector(`#${id}`);
 
-        startedDragFromSidebar = false;
-
         this.setState((prev) => {
           let tree = prev.tree;
           let parent;
@@ -211,7 +212,7 @@ class Builder extends Component {
             oldEl.remove();
           }
 
-          if (!isRoot) {
+          if (!isRoot && el.parentNode) {
             console.log('not root', target);
             const parentEl = el.parentNode.closest(`.${fieldStyle.wrapper}`);
             parent = parentEl.id || false;
@@ -240,11 +241,7 @@ class Builder extends Component {
             },
           };
         });
-
-        // this.setState(prev => ({
-          // tree: this.buildTree(),
-        // }));
-      }
+      });
     });
 
     this.setState(prev => ({dragulas}));
@@ -273,8 +270,8 @@ class Builder extends Component {
               {form.form.post_name}
             </option>
             ))}
-          <option value="0">New</option>
-        </select>
+            <option value="0">New</option>
+          </select>
         <button onClick={() => this.saveForm()}>
           Save
         </button>
@@ -285,34 +282,34 @@ class Builder extends Component {
         ref={(el) => { this.workbench = el }}
       ></div>
 
-      <aside
-        className={builderStyle.sidebar}
-        ref={(el) => { this.sidebar = el }}
+    <aside
+      className={builderStyle.sidebar}
+      ref={(el) => { this.sidebar = el }}
+    >
+      {this.state.available_fields.map((field) => {
+      if (field.attributes.class) {
+      field.attributes.className = field.attributes.class;
+      delete field.attributes.class;
+      }
+
+      if (field.attributes.for) {
+      field.attributes.htmlFor = field.attributes.for;
+      delete field.attributes.for;
+      }
+
+      return <Field
+        tagName={field.tagName}
+        attributes={field.attributes}
+        takesChildren={field.takesChildren}
+        key={field.wplfbKey}
+        wplfbKey={field.wplfbKey}
+        dragulas={this.state.dragulas}
       >
-        {this.state.available_fields.map((field) => {
-          if (field.attributes.class) {
-            field.attributes.className = field.attributes.class;
-            delete field.attributes.class;
-          }
-
-          if (field.attributes.for) {
-            field.attributes.htmlFor = field.attributes.for;
-            delete field.attributes.for;
-          }
-
-          return <Field
-            tagName={field.tagName}
-            attributes={field.attributes}
-            takesChildren={field.takesChildren}
-            key={field.wplfbKey}
-            wplfbKey={field.wplfbKey}
-            dragulas={this.state.dragulas}
-          >
-            {field.childrenHTML}
-          </Field>;
-        })}
-      </aside>
-    </div>
+        {field.childrenHTML}
+      </Field>;
+      })}
+    </aside>
+  </div>
     );
   }
 
