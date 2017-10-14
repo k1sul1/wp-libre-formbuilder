@@ -4,6 +4,7 @@ import Dragula from 'react-dragula';
 import Field from './Field';
 
 import builderStyle from './Builder.module.styl';
+import fieldStyle from './Field.module.styl';
 
 class Builder extends Component {
   constructor() {
@@ -21,6 +22,27 @@ class Builder extends Component {
       : ''; // Not required.
   }
 
+  saveForm() {
+    if (this.state.selected_form) {
+      fetch(`${this.REST_URL}/wp-json/wplfb/forms/form?form_id=${this.state.selected_form}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          fields: this.state.tree,
+          form_id: this.state.selected_form,
+        }),
+      })
+        .then((r) => r.json())
+        .then((r) => {
+          console.log(r);
+        })
+        .catch((err) => {
+          throw err;
+        })
+    } else {
+      // notify
+    }
+  }
+
   changeForm(e) {
     const select = e.target;
     const form_id = parseInt(select.value, 10);
@@ -34,9 +56,11 @@ class Builder extends Component {
 
   loadForm(form_id = undefined) {
     if (!form_id) return false;
-    fetch(`${this.REST_URL}/wp-json/wplfb/forms?form_id=${form_id}`)
+    fetch(`${this.REST_URL}/wp-json/wplfb/forms/form?form_id=${form_id}`)
       .then(r => r.json())
       .then(r => {
+        console.log('yep');
+        console.log(r);;
         //
       })
       .catch(err => {
@@ -135,14 +159,86 @@ class Builder extends Component {
       // console.log('drop');
     });
 
-    dragulas.sidebar.on('drop', () => {
+    dragulas.sidebar.on('drop', (el, target, source, sibling) => {
       if (startedDragFromSidebar) {
-        console.log('Dropped field from sidebar');
+        if (!target) {
+          return false;
+        }
+        // console.log('Dropped field from sidebar');
+        if (target !== this.workbench) {
+          console.log('target not workbench');
+          if (target.closest(`.${builderStyle.workbench}`)) {
+            console.log('target is child of workbench');
+          } else {
+            return false;
+          }
+        }
+
+        const childContainer = el.querySelector('.wplfb-child-container');
+        const id = el.id;
+        const isRoot = target === this.workbench;
+        const children = childContainer ? childContainer.children : [];
+
+        console.log(target, children);
+        if (sibling) {
+          // put into correct place
+        } else {
+          // still do so
+        }
+
+
         startedDragFromSidebar = false;
+
+        this.setState((prev) => {
+          let tree = prev.tree;
+          let parent;
+          const exists = Boolean(tree[id]);
+          const field = exists ? tree[id] : this.state.available_fields
+            .find((field) => field.wplfbKey === el.getAttribute('data-wplfbkey'));
+
+          if (!isRoot) {
+            console.log('not root', target);
+            const parentEl = el.parentNode.closest(`.${fieldStyle.wrapper}`);
+            parent = parentEl.id || false;
+
+            console.log(parent, tree[parent], tree);
+
+            if (tree[parent]) {
+              tree[parent].children.push(id);
+            }
+          }
+
+          const node = {
+            id: id,
+            isRoot,
+            options: {},
+            parent,
+            children: Array.from(children).filter((child) => child.id ? true : false),
+            field,
+          };
+
+          console.log(node);
+          return {
+            tree: {
+              [id]: node,
+              ...tree,
+            },
+          };
+        });
+
+        // this.setState(prev => ({
+          // tree: this.buildTree(),
+        // }));
       }
     });
 
     this.setState(prev => ({dragulas}));
+  }
+
+  buildTree() {
+    const tree = {};
+
+    return tree;
   }
 
   enableDragInChild() {
@@ -164,6 +260,10 @@ class Builder extends Component {
             ))}
           <option value="0">New</option>
         </select>
+        <button onClick={() => this.saveForm()}>
+          Save
+        </button>
+
       </header>
       <div
         className={builderStyle.workbench}

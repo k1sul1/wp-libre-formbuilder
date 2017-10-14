@@ -8,7 +8,8 @@
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "react-dragula": "^1.1.17",
-    "react-html-parser": "^2.0.0"
+    "react-html-parser": "^2.0.0",
+    "shortid": "^2.2.8"
   },
   "scripts": {
     "start": "react-scripts start",
