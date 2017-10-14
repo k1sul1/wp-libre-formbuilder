@@ -165,8 +165,13 @@ class WP_Libre_Formbuilder {
     // }
 
     $params = $request->get_body_params();
-    $fields = $params["fields"];
+    $fields = !empty($params["fields"]) ? $params["fields"] : false;
 
+    if (!$fields) {
+      return new WP_REST_Response([
+        "error" => "No fields provided.",
+      ]);
+    }
 
     update_post_meta($form_id, "wplfb_fields", $fields); // Sanitize?
     $insert = wp_insert_post([

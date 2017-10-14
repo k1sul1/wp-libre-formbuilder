@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import Dragula from 'react-dragula';
 
 import Field from './Field';
@@ -13,6 +12,8 @@ class Builder extends Component {
     this.state = {
       available_forms: [],
       available_fields: [],
+      selected_form: undefined,
+      tree: {},
     };
 
     this.REST_URL = window.location.port !== 80 || window.location.port !== 443
@@ -21,11 +22,29 @@ class Builder extends Component {
   }
 
   changeForm(e) {
-    console.log(e);
+    const select = e.target;
+    const form_id = parseInt(select.value, 10);
+
+    this.setState((prev) => ({
+      selected_form: form_id
+    }));
+
+    this.loadForm(form_id);
+  }
+
+  loadForm(form_id = undefined) {
+    if (!form_id) return false;
+    fetch(`${this.REST_URL}/wp-json/wplfb/forms?form_id=${form_id}`)
+      .then(r => r.json())
+      .then(r => {
+        //
+      })
+      .catch(err => {
+        throw err;
+      });
   }
 
   componentWillMount() {
-    console.log(this.REST_URL, this.state);
     fetch(`${this.REST_URL}/wp-json/wplfb/forms/forms`)
       .then(r => r.json())
       .then(r => {
@@ -50,7 +69,8 @@ class Builder extends Component {
                 tagName: value.dom.element,
                 attributes: value.dom.attributes,
                 takesChildren: value.takesChildren,
-                childrenHTML: value.dom.children_html
+                childrenHTML: value.dom.children_html,
+                wplfbKey: value.wplfbKey,
               },
             ]
           }));
@@ -62,8 +82,8 @@ class Builder extends Component {
   }
 
   componentDidMount() {
-    const workbench = this.refs.workbench;
-    const sidebar = this.refs.sidebar;
+    const workbench = this.workbench;
+    const sidebar = this.sidebar;
 
     const sharedOptions = {
       // moves(el, container, target) {
@@ -72,7 +92,6 @@ class Builder extends Component {
     };
 
     const workbenchOptions = Object.assign({}, sharedOptions, {
-
     });
 
     const sidebarOptions = Object.assign({}, sharedOptions, {
@@ -102,6 +121,27 @@ class Builder extends Component {
       sidebar: Dragula([sidebar], sidebarOptions),
     };
 
+    let startedDragFromSidebar = false;
+
+    dragulas.sidebar.on('drag', () => {
+      startedDragFromSidebar = true;
+    });
+
+    dragulas.workbench.on('drag', () => {
+      // console.log('drag');
+    });
+
+    dragulas.workbench.on('drop', () => {
+      // console.log('drop');
+    });
+
+    dragulas.sidebar.on('drop', () => {
+      if (startedDragFromSidebar) {
+        console.log('Dropped field from sidebar');
+        startedDragFromSidebar = false;
+      }
+    });
+
     this.setState(prev => ({dragulas}));
   }
 
@@ -113,7 +153,10 @@ class Builder extends Component {
     return (
       <div className={builderStyle.wrapper}>
         <header className={builderStyle.header}>
-          <select name="form" onChange={(e) => this.changeForm(e)}>
+          <select name="form"
+            onChange={(e) => this.changeForm(e)}
+            ref={(el) => { this.formselect = el }}
+          >
             {this.state.available_forms.map((form, i) => (
             <option value={form.form.ID} key={i}>
               {form.form.post_name}
@@ -122,11 +165,16 @@ class Builder extends Component {
           <option value="0">New</option>
         </select>
       </header>
-      <div className={builderStyle.workbench} ref="workbench"></div>
+      <div
+        className={builderStyle.workbench}
+        ref={(el) => { this.workbench = el }}
+      ></div>
 
-      <aside className={builderStyle.sidebar} ref="sidebar">
-        {this.state.available_fields.map((field, key) => {
-
+      <aside
+        className={builderStyle.sidebar}
+        ref={(el) => { this.sidebar = el }}
+      >
+        {this.state.available_fields.map((field) => {
           if (field.attributes.class) {
             field.attributes.className = field.attributes.class;
             delete field.attributes.class;
@@ -141,8 +189,8 @@ class Builder extends Component {
             tagName={field.tagName}
             attributes={field.attributes}
             takesChildren={field.takesChildren}
-            key={key}
-            key2={key}
+            key={field.wplfbKey}
+            wplfbKey={field.wplfbKey}
             dragulas={this.state.dragulas}
           >
             {field.childrenHTML}
