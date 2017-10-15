@@ -108,145 +108,178 @@ class Builder extends Component {
   }
 
   componentDidMount() {
+    console.log('State works if you "proxy" drags through workbench');
     const workbench = this.workbench;
     const sidebar = this.sidebar;
-
-    const sharedOptions = {
+    const drake = Dragula([workbench, sidebar], {
       isContainer(el) {
-        if (el === workbench) {
-          return true;
-        } else if (el.classList.contains('wplfb-child-container')) {
+        if (el.classList.contains('wplfb-child-container')) {
           return true;
         }
 
         return false;
       },
+      copy(el, source) {
+        if (source === sidebar) {
+          return true;
+        }
 
+        return false;
+      },
       accepts(el, target, source, sibling) {
-        if (target === source) {
+        if (source === sidebar && target.closest(`.${builderStyle.sidebar}`)) {
           return false;
         }
 
-        if (target.closest(`#${el.getAttribute('data-id')}`)) {
-          return false;
-        }
-
-        if (source === workbench) {
-          if (target.classList.contains('wplfb-child-container')) {
-            return true;
-          }
-
-          return false;
-        } else if (!el.classList.contains(fieldStyle.wrapper)) {
-          return false;
-        }
-
-        return true;
-      },
-
-      invalid(el, handle) {
-        if (!handle.classList.contains(fieldStyle.header)) {
+        if (target.classList.contains('wplfb-child-container')) {
+          return true;
+        }  else if (target === workbench) {
           return true;
         }
 
         return false;
       },
-    };
 
-    const workbenchOptions = Object.assign({}, sharedOptions, {
-      copy: false,
+      moves(el, source, handle, sibling) {
+        if (handle.classList.contains(fieldStyle.header)) {
+          return true;
+        }
+
+        return false;
+      },
     });
 
-    const sidebarOptions = Object.assign({}, sharedOptions, {
-      copy: true,
-    });
+    drake.on('drop', (el, target, source, sibling) => {
+      if (!target) {
+        return false;
+      }
 
-    const dragulas = {
-      workbench: Dragula([workbench], workbenchOptions),
-      sidebar: Dragula([sidebar], sidebarOptions),
-    };
-
-
-    Object.keys(dragulas).forEach((d) => {
-      dragulas[d].on('drop', (el, target, source, sibling) => {
-        if (!target) {
+      if (target !== this.workbench) {
+        if (target.closest(`.${builderStyle.workbench}`)) {
+        } else {
           return false;
         }
-        // console.log('Dropped field from sidebar');
-        if (target !== this.workbench) {
-          console.log('target not workbench');
-          if (target.closest(`.${builderStyle.workbench}`)) {
-            console.log('target is child of workbench');
-          } else {
-            return false;
-          }
-        }
+      }
 
-        const childContainer = el.querySelector('.wplfb-child-container');
-        const id = el.getAttribute('data-id');
-        const isRoot = target === this.workbench;
-        const children = childContainer ? childContainer.children : [];
+      const childContainer = el.querySelector('.wplfb-child-container');
+      const id = el.getAttribute('data-id');
+      let isRoot = target === this.workbench;
+      const children = childContainer ? childContainer.children : [];
 
-        if (sibling) {
-          // put into correct place
-        } else {
-          // still do so
-        }
+      if (sibling) {
+        // put into correct place
+      } else {
+        // still do so
+      }
 
-        const oldEl = source.querySelector(`#${id}`);
+      this.setState((prev) => {
+        let tree = Object.assign({}, prev.tree);
+        let parent = false;
+        const exists = Boolean(tree[id]);
+        const field = exists ? tree[id] : this.state.available_fields
+          .find((field) => field.wplfbKey === el.getAttribute('data-wplfbkey'));
 
-        this.setState((prev) => {
-          let tree = prev.tree;
-          let parent;
-          const exists = Boolean(tree[id]);
-          const field = exists ? tree[id] : this.state.available_fields
-            .find((field) => field.wplfbKey === el.getAttribute('data-wplfbkey'));
+        if (exists) {
+          console.log('existing field', field);
+          parent = field.parent;
 
-          if (oldEl) {
-            delete tree[oldEl.id];
-            Object.keys(tree).forEach((key) => {
-              let childIndex = tree[key].children.indexOf(oldEl.id)
-              if (childIndex > -1) {
-                console.log('found id from children', key);
-                tree[key].children.splice(childIndex, 1);
+          if (parent) {
+            // check if there's a parent (in state)
+            // first check if the parent is what state says it is
+
+            let parentEl = el.closest(`[data-id="${parent}"]`);
+
+            if (!parentEl) {
+              // According to state, the field has a parent, but the parent
+              // isn't what the state thinks it is
+
+              // do we have a parent, or are we at root?
+              parentEl = el.parentNode.closest(`.${fieldStyle.wrapper}`);
+              if (parentEl) {
+                console.log('parent', parentEl);
+                parent = parentEl.getAttribute('data-id');
+                isRoot = false;
+              } else {
+                console.log('root');
+                tree[parent].children.splice(
+                  tree[parent].children.indexOf(id),
+                  1
+                );
+                parent = false;
+                isRoot = true;
               }
-            });
-            oldEl.remove();
+            } else if (parentEl) {
+              const oldParent = parent;
+              parent = parentEl.getAttribute('data-id');
+              console.log(parent === oldParent);
+
+              tree[parent].children.push(id);
+            } else {
+              console.log('this should not happen');
+            }
+          } else {
+            // no parent, should there be?
+            let parentEl = el.parentNode.closest(`.${fieldStyle.wrapper}`);
+            if (parentEl) {
+              // parent found!
+              parent = parentEl.getAttribute('data-id');
+              isRoot = false;
+
+              console.log('found a parent', parent);
+              if (tree[parent]) {
+                tree[parent].children.push(id);
+              }
+            } else {
+              // no parent found in dom, in root?
+              console.log('this should not happen either');
+            }
           }
-
-          if (!isRoot && el.parentNode) {
-            console.log('not root', target);
-            const parentEl = el.parentNode.closest(`.${fieldStyle.wrapper}`);
-            parent = parentEl.getAttribute('data-id') || false;
-
-            console.log(parent, tree[parent], tree);
+        } else {
+          let parentEl = el.parentNode.closest(`.${fieldStyle.wrapper}`);
+          if (!parentEl) {
+            isRoot = true;
+          } else {
+            isRoot = false;
+            parent = parentEl.getAttribute('data-id');
 
             if (tree[parent]) {
+              // Might've to deal with ordering later in life
               tree[parent].children.push(id);
             }
           }
+        }
 
-          const node = {
-            id: id,
-            isRoot,
-            options: {},
-            parent,
-            children: Array.from(children).filter((child) => child.getAttribute('data-id') ? true : false),
-            field,
-          };
+        const node = {
+          id: id,
+          isRoot,
+          options: {},
+          parent,
+          children: Array.from(children).filter((child) => child.getAttribute('data-id') ? true : false),
+          field,
+        };
 
-          console.log(node);
-          return {
-            tree: {
-              [id]: node,
-              ...tree,
-            },
-          };
+        console.log(node, tree[id]);
+
+        return {
+          tree: {
+            ...tree,
+            [id]: node,
+          },
+        };
+      }, () => {
+        // Generate new IDs, for all because it's easier
+        const fields = this.state.available_fields;
+        this.setState({
+          available_fields: fields.map((field) => {
+            return {
+              ...field,
+              id: shortid.generate(),
+            };
+          }),
         });
       });
     });
 
-    this.setState(prev => ({dragulas}));
   }
 
   buildTree() {
@@ -306,7 +339,6 @@ class Builder extends Component {
         key={field.wplfbKey}
         wplfbKey={field.wplfbKey}
         id={field.id}
-        dragulas={this.state.dragulas}
       >
         {field.childrenHTML}
       </Field>;
@@ -316,10 +348,6 @@ class Builder extends Component {
     );
   }
 
-  dragulaDecorator(componentBackingInstance) {
-    const options = {};
-    Dragula([componentBackingInstance], options);
-  }
 }
 
 export default Builder;

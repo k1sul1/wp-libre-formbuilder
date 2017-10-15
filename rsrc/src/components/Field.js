@@ -29,6 +29,8 @@ class Field extends Component {
         <style>{`.wplfb-child-container { background: #ccc }`}</style>
         <header className={` ${fieldStyle.header}`}>
           <span className={fieldStyle.header__name}>{this.name}</span>
+          <span style={{ textAlign: 'center' }}>{this.props.id}</span>
+
           <div className={fieldStyle.header__tools}>
             <button className="remove" onClick={() => null}>
               &times;
