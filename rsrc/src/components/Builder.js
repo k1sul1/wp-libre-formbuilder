@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Dragula from 'react-dragula';
+import shortid from 'shortid';
 
 import Field from './Field';
 
@@ -95,6 +96,7 @@ class Builder extends Component {
               takesChildren: value.takesChildren,
               childrenHTML: value.dom.children_html,
               wplfbKey: value.wplfbKey,
+              id: shortid.generate(),
             },
             ]
           }));
@@ -125,7 +127,7 @@ class Builder extends Component {
           return false;
         }
 
-        if (target.closest(`#${el.id}`)) {
+        if (target.closest(`#${el.getAttribute('data-id')}`)) {
           return false;
         }
 
@@ -181,7 +183,7 @@ class Builder extends Component {
         }
 
         const childContainer = el.querySelector('.wplfb-child-container');
-        const id = el.id;
+        const id = el.getAttribute('data-id');
         const isRoot = target === this.workbench;
         const children = childContainer ? childContainer.children : [];
 
@@ -215,7 +217,7 @@ class Builder extends Component {
           if (!isRoot && el.parentNode) {
             console.log('not root', target);
             const parentEl = el.parentNode.closest(`.${fieldStyle.wrapper}`);
-            parent = parentEl.id || false;
+            parent = parentEl.getAttribute('data-id') || false;
 
             console.log(parent, tree[parent], tree);
 
@@ -229,7 +231,7 @@ class Builder extends Component {
             isRoot,
             options: {},
             parent,
-            children: Array.from(children).filter((child) => child.id ? true : false),
+            children: Array.from(children).filter((child) => child.getAttribute('data-id') ? true : false),
             field,
           };
 
@@ -303,6 +305,7 @@ class Builder extends Component {
         takesChildren={field.takesChildren}
         key={field.wplfbKey}
         wplfbKey={field.wplfbKey}
+        id={field.id}
         dragulas={this.state.dragulas}
       >
         {field.childrenHTML}

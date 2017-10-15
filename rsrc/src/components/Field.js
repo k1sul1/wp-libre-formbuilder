@@ -25,7 +25,7 @@ class Field extends Component {
   render() {
     const TagName = this.props.tagName;
     return (
-      <div className={fieldStyle.wrapper} data-wplfbkey={this.props.wplfbKey} id={this.state.id}>
+      <div className={fieldStyle.wrapper} data-wplfbkey={this.props.wplfbKey} data-id={this.props.id}>
         <style>{`.wplfb-child-container { background: #ccc }`}</style>
         <header className={` ${fieldStyle.header}`}>
           <span className={fieldStyle.header__name}>{this.name}</span>
