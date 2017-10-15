@@ -109,6 +109,7 @@ class Builder extends Component {
 
   componentDidMount() {
     console.log('State works if you "proxy" drags through workbench');
+    console.log('I might have fixed it.');
     const workbench = this.workbench;
     const sidebar = this.sidebar;
     const drake = Dragula([workbench, sidebar], {
@@ -197,7 +198,14 @@ class Builder extends Component {
               parentEl = el.parentNode.closest(`.${fieldStyle.wrapper}`);
               if (parentEl) {
                 console.log('parent', parentEl);
+
+                tree[parent].children.splice(
+                  tree[parent].children.indexOf(id),
+                  1
+                );
                 parent = parentEl.getAttribute('data-id');
+                tree[parent].children.push(id);
+
                 isRoot = false;
               } else {
                 console.log('root');
