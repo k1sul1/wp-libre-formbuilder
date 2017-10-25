@@ -317,7 +317,7 @@ class WP_Libre_Formbuilder {
 
       // WTF, what do you mean tagName doesn't exist sometimes?
       // I fucking hate PHP.
-      $tagName = $field->field->tagName ?? "span";
+      $tagName = $field->field->tagName ?? "mark";
       $attributes = !empty($field->field->attributes)
         ? $field->field->attributes
         : [];
@@ -331,7 +331,6 @@ class WP_Libre_Formbuilder {
         $element->appendChild($chunks[$child]);
       }
 
-      // $chunks[$id] = $dom->saveHTML($element);
       $chunks[$id] = $element;
       return $chunks[$id];
     };
@@ -339,10 +338,7 @@ class WP_Libre_Formbuilder {
 
     foreach ($fields as $id => $field) {
       if (!empty($field->children)) {
-        // generate chunks before
         foreach ($field->children as $child_id) {
-          error_log("child $child_id");
-          error_log(print_r($fields[$child_id], true));
           $generateChunk($child_id, $fields[$child_id]);
         }
       }
