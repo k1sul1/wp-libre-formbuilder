@@ -310,7 +310,7 @@ class WP_Libre_Formbuilder {
     $html = "";
     $chunks = [];
     $dom = new DOMDocument();
-    $generateChunk = function ($id, $field) use ($dom) {
+    $generateChunk = function ($id, $field) use (&$dom, &$chunks) {
       if (!empty($chunks[$id])) {
         return $chunks[$id];
       }
@@ -328,7 +328,7 @@ class WP_Libre_Formbuilder {
       }
 
       foreach ($field->children as $child) {
-        $element->appendChild($child);
+        $element->appendChild($chunks[$child]);
       }
 
       // $chunks[$id] = $dom->saveHTML($element);
@@ -338,7 +338,6 @@ class WP_Libre_Formbuilder {
 
 
     foreach ($fields as $id => $field) {
-      // error_log(print_r($fields[$id], true));
       if (!empty($field->children)) {
         // generate chunks before
         foreach ($field->children as $child_id) {
@@ -348,7 +347,9 @@ class WP_Libre_Formbuilder {
         }
       }
 
-      $html .= $dom->saveHTML($generateChunk($id, $field));
+      if (empty($field->parent)) {
+        $html .= $dom->saveHTML($generateChunk($id, $field));
+      }
     }
 
     error_log(print_r($html, true));
