@@ -52,6 +52,12 @@ add_action("admin_enqueue_scripts", function() {
   wp_enqueue_script("wplfb-js", $path . "js/app.{$version}.js", ["wplfb-vendorjs"], null, true);
 });
 
+if (function_exists('xdebug_disable')) {
+  // Those fugly HTML tables sure do not help when dealing with REST..
+  xdebug_disable();
+}
+
+
 // require_once "vendor/autoload.php";
 require_once "helpers.php";
 require_once "classes/class.wp-libre-formbuilder.php";
