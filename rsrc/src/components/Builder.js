@@ -25,12 +25,19 @@ class Builder extends Component {
 
   saveForm() {
     if (this.state.selected_form) {
-      fetch(`${this.REST_URL}/wp-json/wplfb/forms/form?form_id=${this.state.selected_form}`, {
+      const body = JSON.stringify({
+        fields: this.state.tree,
+        form_id: this.state.selected_form,
+      });
+
+      console.log(body);
+
+      fetch(`${this.REST_URL}/wp-json/wplfb/forms/form`, {
         method: 'POST',
-        body: JSON.stringify({
-          fields: this.state.tree,
-          form_id: this.state.selected_form,
-        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body,
       })
         .then((r) => r.json())
         .then((r) => {

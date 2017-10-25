@@ -154,30 +154,42 @@ class WP_Libre_Formbuilder {
     ]);
   }
 
+  /**
+   * For whatever reason $_POST and $request->get_body_params() are empty.
+   * This goes around that.
+   */
+  public function getRequestBody() {
+    // Maybe do error handling.
+    return json_decode(file_get_contents('php://input'));
+  }
+
   public function saveForm(WP_REST_Request $request) {
     $form_id = $request->get_param("form_id");
-
-    // Do not check for null. Create a new one.
-    // if (is_null($form_id)) {
-      // return new WP_REST_Response([
-        // "error" => self::ERR_FORM_ID_EMPTY
-      // ]);
-    // }
-
-    $params = $request->get_body_params();
-    $fields = !empty($params["fields"]) ? $params["fields"] : false;
+    $params = $this->getRequestBody();
+    $fields = !empty($params->fields) ? $params->fields : false;
 
     if (!$fields) {
       return new WP_REST_Response([
-        "error" => "No fields provided.",
+        "error" => "No tree provided.",
       ]);
     }
 
     update_post_meta($form_id, "wplfb_fields", $fields); // Sanitize?
-    $insert = wp_insert_post([
-      "ID" => !is_null($form_id) ? $form_id : 0,
-      "post_content" => $this->generateHTML($fields)
-    ]);
+    $is_insert = is_null($form_id);
+
+    // Stop messing with the HTML!
+    remove_all_filters("content_save_pre");
+
+    $args = [
+      "ID" => !$is_insert ? $form_id : 0,
+      "post_content" => $this->generateHTML($fields),
+      "post_type" => "wplf-form",
+    ];
+
+    $fn = !$is_insert
+      ? "wp_update_post"
+      : "wp_insert_post";
+    $insert = $fn($args);
 
     if (!is_wp_error($insert) && $insert !== 0) {
       return new WP_REST_Response([
@@ -292,21 +304,54 @@ class WP_Libre_Formbuilder {
     return $parseNode($DOM->firstChild, $parseNode); // <3
   }
 
-  public function generateHTML($json = '') {
-    // This is absolutely horrible and was written in about 30 seconds for a poc.
-    // Rewrite completely.
-    $obj = json_decode($json);
-    $shorts = ["br", "img"]; // Add all.
-    $html = "";
+  public function generateHTML($fields) {
+    $fields = (array) $fields;
 
-    foreach ($obj as $key => $value) {
-      $is_short = in_array($key, $shorts);
-      $mayClose = $is_short ? "/" : "";
-      $html .= "<$key $attrs $mayClose>";
-      $html .= ""; // Add children here.
-      $html .= !$is_short ? "</$key>" : "";
+    $html = "";
+    $chunks = [];
+    $dom = new DOMDocument();
+    $generateChunk = function ($id, $field) use ($dom) {
+      if (!empty($chunks[$id])) {
+        return $chunks[$id];
+      }
+
+      // WTF, what do you mean tagName doesn't exist sometimes?
+      // I fucking hate PHP.
+      $tagName = $field->field->tagName ?? "span";
+      $attributes = !empty($field->field->attributes)
+        ? $field->field->attributes
+        : [];
+      $element = $dom->createElement($tagName);
+
+      foreach ($attributes as $key => $value) {
+        $element->setAttribute($key, $value);
+      }
+
+      foreach ($field->children as $child) {
+        $element->appendChild($child);
+      }
+
+      // $chunks[$id] = $dom->saveHTML($element);
+      $chunks[$id] = $element;
+      return $chunks[$id];
+    };
+
+
+    foreach ($fields as $id => $field) {
+      // error_log(print_r($fields[$id], true));
+      if (!empty($field->children)) {
+        // generate chunks before
+        foreach ($field->children as $child_id) {
+          error_log("child $child_id");
+          error_log(print_r($fields[$child_id], true));
+          $generateChunk($child_id, $fields[$child_id]);
+        }
+      }
+
+      $html .= $dom->saveHTML($generateChunk($id, $field));
     }
 
+    error_log(print_r($html, true));
     return $html;
   }
 }
