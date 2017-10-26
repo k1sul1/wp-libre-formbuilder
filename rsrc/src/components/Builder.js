@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Dragula from 'react-dragula';
 import shortid from 'shortid';
+import { el } from 'redom';
 
 import Field from './Field';
 
@@ -23,14 +24,52 @@ class Builder extends Component {
       : ''; // Not required.
   }
 
+  generateHTML() {
+    const tree = this.state.tree;
+    const ids = Object.keys(tree);
+
+    const nodes = ids.map((id) => {
+      const field = tree[id];
+      const element = el(field.field.tagName, {
+        ...field.field.attributes,
+        'data-wplfb-id': id,
+      });
+
+      if (field.field.childrenHTML) {
+        element.innerHTML = field.field.childrenHTML; // Sorry.
+      }
+
+      return element;
+    });
+    const root = el('.wplfb-wrapper');
+
+    nodes.forEach((node) => {
+      const id = node.getAttribute('data-wplfb-id');
+      const field = tree[id];
+
+      if (!field.parent) {
+        root.appendChild(node);
+      } else {
+        const parent = nodes.find((n) => n.getAttribute('data-wplfb-id') === field.parent);
+
+        if (parent) {
+          parent.appendChild(node);
+        } else {
+          console.log('Figure out why node has no parent even though it should have.');
+        }
+      }
+    });
+
+    return root.innerHTML;
+  }
+
   saveForm() {
     if (this.state.selected_form) {
       const body = JSON.stringify({
         fields: this.state.tree,
+        html: this.generateHTML(),
         form_id: this.state.selected_form,
       });
-
-      console.log(body);
 
       fetch(`${this.REST_URL}/wp-json/wplfb/forms/form`, {
         method: 'POST',

@@ -167,6 +167,7 @@ class WP_Libre_Formbuilder {
     $form_id = $request->get_param("form_id");
     $params = $this->getRequestBody();
     $fields = !empty($params->fields) ? $params->fields : false;
+    $html = !empty($params->html) ? $params->html : false;
 
     if (!$fields) {
       return new WP_REST_Response([
@@ -182,7 +183,7 @@ class WP_Libre_Formbuilder {
 
     $args = [
       "ID" => !$is_insert ? $form_id : 0,
-      "post_content" => $this->generateHTML($fields),
+      "post_content" => $html,
       "post_type" => "wplf-form",
     ];
 
