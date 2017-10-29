@@ -208,10 +208,15 @@ class Builder extends Component {
         }
       }
 
+      if (!el.classList.contains(fieldStyle.wrapper)) {
+        el = el.children[0]; // Hack, remove.
+      }
+
       const childContainer = el.querySelector('.wplfb-child-container');
       const id = el.getAttribute('data-id');
       let isRoot = target === this.workbench;
       const children = childContainer ? childContainer.children : [];
+      console.log(id, el, el.classList.length);
 
       if (sibling) {
         // put into correct place
@@ -312,8 +317,6 @@ class Builder extends Component {
           field,
         };
 
-        console.log(node, tree[id]);
-
         return {
           tree: {
             ...tree,
@@ -338,6 +341,10 @@ class Builder extends Component {
 
 
   buildField (field, children) {
+    if (!field) {
+      return false;
+    }
+
     return (
       <Field
         tagName={field.tagName}
@@ -351,8 +358,8 @@ class Builder extends Component {
       <div>
       {
         children.map((id) => {
+          console.log(id);
           const value = this.state.tree[id];
-          console.log(id, value, this.buildField);
 
           return this.buildField(value.field, value.children);
         })
@@ -363,6 +370,22 @@ class Builder extends Component {
   };
 
   render() {
+    const restoreState = () => {
+      if (this.state.selected_form) {
+        return Object.keys(this.state.tree).map((id) => {
+          const value = this.state.tree[id];
+          const field = value.field;
+
+          if (value.parent) {
+            return;
+          }
+
+          return this.buildField(field, value.children);
+        })
+      }
+
+      return;
+    };
     return (
       <div className={builderStyle.wrapper}>
         <header className={builderStyle.header}>
@@ -385,16 +408,7 @@ class Builder extends Component {
       <div
         className={builderStyle.workbench}
         ref={(el) => { this.workbench = el }}>
-        {Object.keys(this.state.tree).map((id) => {
-          const value = this.state.tree[id];
-          const field = value.field;
-
-          if (value.parent) {
-            return;
-          }
-
-          return this.buildField(field, value.children);
-        })}
+        {restoreState()}
       </div>
 
     <aside

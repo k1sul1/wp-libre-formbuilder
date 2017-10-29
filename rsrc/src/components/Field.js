@@ -24,6 +24,12 @@ class Field extends Component {
 
   render() {
     const TagName = this.props.tagName;
+
+    if (!TagName) {
+      console.error('Something is wrong.', this.props);
+      return false;
+    }
+
     return (
       <div className={fieldStyle.wrapper} data-wplfbkey={this.props.wplfbKey} data-id={this.props.id}>
         <style>{`.wplfb-child-container { background: #ccc }`}</style>
