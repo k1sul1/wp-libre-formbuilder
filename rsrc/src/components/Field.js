@@ -38,9 +38,12 @@ class Field extends Component {
           </div>
         </header>
         <div className={`${fieldStyle.fieldWrapper} fieldWrapper`}>
-          {this.props.takesChildren
-          ? <TagName {...this.props.attributes}>{ReactHTMLParser(this.props.children)}</TagName>
-          : <TagName {...this.props.attributes} />
+          {TagName !== 'input'
+          ? <TagName {...this.props.attributes}>
+            {ReactHTMLParser(this.props.field.childrenHTML)}
+            {this.props.children}
+            </TagName>
+            : <TagName {...this.props.attributes} />
           }
         </div>
       </div>

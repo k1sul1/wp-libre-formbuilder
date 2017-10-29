@@ -106,9 +106,9 @@ class Builder extends Component {
     fetch(`${this.REST_URL}/wp-json/wplfb/forms/form?form_id=${form_id}`)
       .then(r => r.json())
       .then(r => {
-        console.log('yep');
-        console.log(r);;
-        //
+        this.setState({
+          tree: r.fields,
+        });
       })
       .catch(err => {
         throw err;
@@ -336,15 +336,31 @@ class Builder extends Component {
 
   }
 
-  buildTree() {
-    const tree = {};
 
-    return tree;
-  }
+  buildField (field, children) {
+    return (
+      <Field
+        tagName={field.tagName}
+        attributes={field.attributes}
+        takesChildren={field.takesChildren}
+        key={field.wplfbKey}
+        wplfbKey={field.wplfbKey}
+        id={field.id}
+        field={field}
+      >
+      <div>
+      {
+        children.map((id) => {
+          const value = this.state.tree[id];
+          console.log(id, value, this.buildField);
 
-  enableDragInChild() {
-    console.log(this.state).bind(this);
-  }
+          return this.buildField(value.field, value.children);
+        })
+      }
+      </div>
+      </Field>
+    )
+  };
 
   render() {
     return (
@@ -368,34 +384,35 @@ class Builder extends Component {
       </header>
       <div
         className={builderStyle.workbench}
-        ref={(el) => { this.workbench = el }}
-      ></div>
+        ref={(el) => { this.workbench = el }}>
+        {Object.keys(this.state.tree).map((id) => {
+          const value = this.state.tree[id];
+          const field = value.field;
+
+          if (value.parent) {
+            return;
+          }
+
+          return this.buildField(field, value.children);
+        })}
+      </div>
 
     <aside
       className={builderStyle.sidebar}
       ref={(el) => { this.sidebar = el }}
     >
       {this.state.available_fields.map((field) => {
-      if (field.attributes.class) {
-      field.attributes.className = field.attributes.class;
-      delete field.attributes.class;
-      }
+        if (field.attributes.class) {
+          field.attributes.className = field.attributes.class;
+          delete field.attributes.class;
+        }
 
-      if (field.attributes.for) {
-      field.attributes.htmlFor = field.attributes.for;
-      delete field.attributes.for;
-      }
+        if (field.attributes.for) {
+          field.attributes.htmlFor = field.attributes.for;
+          delete field.attributes.for;
+        }
 
-      return <Field
-        tagName={field.tagName}
-        attributes={field.attributes}
-        takesChildren={field.takesChildren}
-        key={field.wplfbKey}
-        wplfbKey={field.wplfbKey}
-        id={field.id}
-      >
-        {field.childrenHTML}
-      </Field>;
+        return this.buildField(field, []);
       })}
     </aside>
   </div>
