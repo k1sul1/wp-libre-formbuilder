@@ -147,6 +147,14 @@ class Builder extends Component {
       });
   }
 
+  shouldComponentUpdate() {
+    if (this.preventUpdate) {
+      return false;
+    }
+
+    return true;
+  }
+
   componentDidMount() {
     const workbench = this.workbench;
     const sidebar = this.sidebar;
@@ -275,6 +283,8 @@ class Builder extends Component {
               parent = parentEl.getAttribute('data-id');
               isRoot = false;
 
+              // this.preventUpdate = true; // Hack to prevent React from dying
+
               console.log('found a parent', parent);
               if (tree[parent]) {
                 tree[parent].children.push(id);
@@ -316,8 +326,11 @@ class Builder extends Component {
           },
         };
       }, () => {
+        if (source === this.sidebar) {
+          el.remove();
+        }
+
         // Generate new IDs, for all because it's easier
-        el.remove();
         const fields = this.state.available_fields;
         this.setState({
           available_fields: fields.map((field) => {
