@@ -13,7 +13,7 @@
  */
 
 $package = json_decode(file_get_contents("package.json", "r"));
-$manifest = json_decode(file_get_contents("rsrc/build/asset-manifest.json", "r"));
+$manifest = json_decode(file_get_contents("build/asset-manifest.json", "r"));
 
 register_activation_hook(__FILE__, function() {
   $php_version = phpversion();
@@ -42,7 +42,7 @@ register_activation_hook(__FILE__, function() {
 register_deactivation_hook(__FILE__, "flush_rewrite_rules");
 
 add_action("admin_enqueue_scripts", function() use ($package, $manifest) {
-  $path = plugin_dir_url(__FILE__) . "rsrc/build/";
+  $path = plugin_dir_url(__FILE__) . "/build/";
   $version = $package->version;
 
   wp_enqueue_style("wplfb-css", $path . $manifest->{"main.css"}, false, null);
