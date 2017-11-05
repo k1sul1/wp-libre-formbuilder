@@ -15,7 +15,7 @@ class Field extends Component {
   }
 
   render() {
-    const TagName = this.props.tagName;
+    const TagName = this.props.field.tagName;
 
     if (!TagName) {
       console.error('Something is wrong.', this.props);
@@ -23,11 +23,11 @@ class Field extends Component {
     }
 
     return (
-      <div className={fieldStyle.wrapper} data-wplfbkey={this.props.wplfbKey} data-id={this.props.id}>
+      <div className={fieldStyle.wrapper} data-id={this.props.field.id}>
         <style>{`.wplfb-child-container { background: #ccc }`}</style>
         <header className={` ${fieldStyle.header}`}>
           <span className={fieldStyle.header__name}>{this.name}</span>
-          <span style={{ textAlign: 'center' }}>{this.props.id}</span>
+          <span style={{ textAlign: 'center' }}>{this.props.field.id}</span>
 
           <div className={fieldStyle.header__tools}>
             <button className="remove" onClick={() => null}>
@@ -38,10 +38,12 @@ class Field extends Component {
         <div className={`${fieldStyle.fieldWrapper} fieldWrapper`}>
           {TagName !== 'input'
           ? <TagName {...this.props.attributes}>
-            {ReactHTMLParser(this.props.field.childrenHTML)}
-            {this.props.children}
+              <div className="wplfb-child-container">
+                {ReactHTMLParser(this.props.field.childrenHTML)}
+                {this.props.children}
+              </div>
             </TagName>
-            : <TagName {...this.props.attributes} />
+            : <TagName {...this.props.field.attributes} />
           }
         </div>
       </div>

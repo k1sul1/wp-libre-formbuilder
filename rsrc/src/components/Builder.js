@@ -30,13 +30,14 @@ class Builder extends Component {
 
     const nodes = ids.map((id) => {
       const field = tree[id];
-      const element = el(field.field.tagName, {
-        ...field.field.attributes,
+      console.log(field, id, this.state.tree);
+      const element = el(field.fdata.tagName, {
+        ...field.fdata.attributes,
         'data-wplfb-id': id,
       });
 
-      if (field.field.childrenHTML) {
-        element.innerHTML = field.field.childrenHTML; // Sorry.
+      if (field.fdata.childrenHTML) {
+        element.innerHTML = field.fdata.childrenHTML; // Sorry.
       }
 
       return element;
@@ -225,7 +226,7 @@ class Builder extends Component {
         let parent = false;
         const exists = Boolean(tree[id]);
         const field = exists ? tree[id] : this.state.available_fields
-          .find((field) => field.wplfbKey === el.getAttribute('data-wplfbkey'));
+          .find((field) => field.id === el.getAttribute('data-id'));
 
         if (exists) {
           console.log('existing field', field);
@@ -310,7 +311,8 @@ class Builder extends Component {
           options: {},
           parent,
           children: Array.from(children).filter((child) => child.getAttribute('data-id') ? true : false),
-          field,
+          field, // remove
+          fdata: field,
         };
 
         return {
@@ -343,19 +345,10 @@ class Builder extends Component {
     }
 
     return (
-      <Field
-        tagName={field.tagName}
-        attributes={field.attributes}
-        takesChildren={field.takesChildren}
-        key={field.wplfbKey}
-        wplfbKey={field.wplfbKey}
-        id={field.id}
-        field={field}
-      >
-      <div>
+      <Field field={field} key={field.id}>
+      <div> {/* Useless div, only wraps wplf-child-container */}
       {
         children.map((id) => {
-          console.log(id);
           const value = this.state.tree[id];
 
           return this.buildField(value.field, value.children);
