@@ -14,14 +14,6 @@ class Field extends Component {
 
   }
 
-  componentDidMount() {
-    setInterval(() => {
-      this.setState({
-        id: shortid.generate(),
-      });
-    }, 100);
-  }
-
   render() {
     const TagName = this.props.tagName;
 
