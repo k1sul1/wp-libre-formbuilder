@@ -136,7 +136,6 @@ class Builder extends Component {
               attributes: value.dom.attributes,
               takesChildren: value.takesChildren,
               childrenHTML: value.dom.children_html,
-              wplfbKey: value.wplfbKey,
               id: shortid.generate(),
             },
             ]
@@ -209,7 +208,6 @@ class Builder extends Component {
       const id = el.getAttribute('data-id');
       let isRoot = target === this.workbench;
       const children = childContainer ? childContainer.children : [];
-      console.log(id, el, el.classList.length);
 
       if (sibling) {
         // put into correct place
