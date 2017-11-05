@@ -65,30 +65,26 @@ class Builder extends Component {
   }
 
   saveForm() {
-    if (this.state.selected_form) {
-      const body = JSON.stringify({
-        fields: this.state.tree,
-        html: this.generateHTML(),
-        form_id: this.state.selected_form,
-      });
+    const body = JSON.stringify({
+      fields: this.state.tree,
+      html: this.generateHTML(),
+      form_id: this.state.selected_form,
+    });
 
-      fetch(`${this.REST_URL}/wp-json/wplfb/forms/form`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body,
+    fetch(`${this.REST_URL}/wp-json/wplfb/forms/form`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body,
+    })
+      .then((r) => r.json())
+      .then((r) => {
+        console.log(r);
       })
-        .then((r) => r.json())
-        .then((r) => {
-          console.log(r);
-        })
-        .catch((err) => {
-          throw err;
-        })
-    } else {
-      // notify
-    }
+      .catch((err) => {
+        throw err;
+      })
   }
 
   changeForm(e) {
