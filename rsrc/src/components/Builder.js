@@ -8,6 +8,9 @@ import Field from './Field';
 import builderStyle from './Builder.module.styl';
 import fieldStyle from './Field.module.styl';
 
+console.log(`Restoring a form works, but trying to drag those existing fields into new places results in a weird error.
+Problem seems to be that there's no tag name?`);
+
 class Builder extends Component {
   constructor() {
     super();
