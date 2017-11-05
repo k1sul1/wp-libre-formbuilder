@@ -25,6 +25,10 @@ class Builder extends Component {
     this.REST_URL = window.location.port !== 80 || window.location.port !== 443
       ? window.REST_URL
       : ''; // Not required.
+
+    if (!this.REST_URL) {
+      this.REST_URL = ''; // I just don't want to deal with this right now.
+    }
   }
 
   generateHTML() {
