@@ -321,6 +321,7 @@ class Builder extends Component {
         };
       }, () => {
         // Generate new IDs, for all because it's easier
+        el.remove();
         const fields = this.state.available_fields;
         this.setState({
           available_fields: fields.map((field) => {
