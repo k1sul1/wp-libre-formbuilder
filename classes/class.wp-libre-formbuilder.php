@@ -175,7 +175,6 @@ class WP_Libre_Formbuilder {
       ]);
     }
 
-    update_post_meta($form_id, "wplfb_fields", $fields); // Sanitize?
     $is_insert = is_null($form_id);
 
     // Stop messing with the HTML!
@@ -185,6 +184,7 @@ class WP_Libre_Formbuilder {
       "ID" => !$is_insert ? $form_id : 0,
       "post_content" => $html,
       "post_type" => "wplf-form",
+      "post_status" => "publish",
     ];
 
     $fn = !$is_insert
@@ -193,6 +193,7 @@ class WP_Libre_Formbuilder {
     $insert = $fn($args);
 
     if (!is_wp_error($insert) && $insert !== 0) {
+      update_post_meta($insert, "wplfb_fields", $fields); // Sanitize?
       return new WP_REST_Response([
         "success" => self::FORM_SAVED,
         "fields" => $fields
