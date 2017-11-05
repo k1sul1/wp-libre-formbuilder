@@ -152,8 +152,6 @@ class Builder extends Component {
   }
 
   componentDidMount() {
-    console.log('State works if you "proxy" drags through workbench');
-    console.log('I might have fixed it.');
     const workbench = this.workbench;
     const sidebar = this.sidebar;
     const drake = Dragula([workbench, sidebar], {
