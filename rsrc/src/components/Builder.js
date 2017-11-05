@@ -258,11 +258,12 @@ class Builder extends Component {
 
                 isRoot = false;
               } else {
-                console.log('root');
+                console.log('root', tree[parent].children);
                 tree[parent].children.splice(
                   tree[parent].children.indexOf(id),
                   1
                 );
+                console.log(tree[parent].children);
                 parent = false;
                 isRoot = true;
               }
