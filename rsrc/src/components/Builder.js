@@ -118,11 +118,9 @@ class Builder extends Component {
   componentWillMount() {
     fetch(`${this.REST_URL}/wp-json/wplfb/forms/forms`)
       .then(r => r.json())
-      .then(r => {
-        r.forEach(form => {
-          this.setState(prev => ({
-            available_forms: [...prev, form]
-          }))
+      .then(available_forms => {
+        this.setState({
+          available_forms,
         });
       })
       .catch(err => {
