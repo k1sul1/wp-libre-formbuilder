@@ -367,21 +367,17 @@ class Builder extends Component {
   };
 
   render() {
-    const restoreState = () => {
-      if (this.state.selected_form) {
-        return Object.keys(this.state.tree).map((id) => {
-          const value = this.state.tree[id];
-          const field = value.field;
+    const renderFromState = () => {
+      return Object.keys(this.state.tree).map((id) => {
+        const value = this.state.tree[id];
+        const field = value.field;
 
-          if (value.parent) {
-            return;
-          }
+        if (value.parent) {
+          return;
+        }
 
-          return this.buildField(field, value.children);
-        })
-      }
-
-      return;
+        return this.buildField(field, value.children);
+      })
     };
     return (
       <div className={builderStyle.wrapper}>
@@ -405,7 +401,7 @@ class Builder extends Component {
       <div
         className={builderStyle.workbench}
         ref={(el) => { this.workbench = el }}>
-        {restoreState()}
+        {renderFromState()}
       </div>
 
     <aside
