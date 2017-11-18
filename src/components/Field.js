@@ -15,7 +15,8 @@ class Field extends Component {
   }
 
   render() {
-    const TagName = this.props.field.tagName;
+    console.log(this.props);
+    const TagName = this.props.fdata.tagName || this.props.fdata.fdata.tagName; // Flatten it...
 
     if (!TagName) {
       console.error('Something is wrong.', this.props);
@@ -23,11 +24,11 @@ class Field extends Component {
     }
 
     return (
-      <div className={fieldStyle.wrapper} data-id={this.props.field.id}>
+      <div className={fieldStyle.wrapper} data-id={this.props.fdata.id}>
         <style>{`.wplfb-child-container { background: #ccc }`}</style>
         <header className={` ${fieldStyle.header}`}>
           <span className={fieldStyle.header__name}>{this.name}</span>
-          <span style={{ textAlign: 'center' }}>{this.props.field.id}</span>
+          <span style={{ textAlign: 'center' }}>{this.props.fdata.id}</span>
 
           <div className={fieldStyle.header__tools}>
             <button className="remove" onClick={() => null}>
@@ -39,11 +40,11 @@ class Field extends Component {
           {TagName !== 'input'
           ? <TagName {...this.props.attributes}>
               <div className="wplfb-child-container">
-                {ReactHTMLParser(this.props.field.childrenHTML)}
+                {ReactHTMLParser(this.props.fdata.childrenHTML)}
                 {this.props.children}
               </div>
             </TagName>
-            : <TagName {...this.props.field.attributes} />
+            : <TagName {...this.props.fdata.attributes} />
           }
         </div>
       </div>

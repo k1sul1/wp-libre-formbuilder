@@ -363,7 +363,7 @@ class Builder extends Component {
     }
 
     return (
-      <Field field={field} key={field.id}>
+      <Field fdata={field} key={field.id}>
       <div> {/* Useless div, only wraps wplf-child-container */}
       {
         children.map((id) => {
@@ -420,6 +420,7 @@ class Builder extends Component {
       ref={(el) => { this.sidebar = el }}
     >
       {this.state.available_fields.map((field) => {
+        console.log(field);
         if (field.attributes.class) {
           field.attributes.className = field.attributes.class;
           delete field.attributes.class;
