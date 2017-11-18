@@ -38,7 +38,8 @@ class Builder extends Component {
     const nodes = ids.map((id) => {
       const field = tree[id];
       console.log(field, id, this.state.tree);
-      const element = el(field.fdata.tagName, {
+      // This tagName fetch is ridiculous
+      const element = el(field.fdata.tagName || field.fdata.fdata.tagName, {
         ...field.fdata.attributes,
         'data-wplfb-id': id,
       });
