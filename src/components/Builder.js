@@ -327,6 +327,9 @@ class Builder extends Component {
           fdata: field,
         };
 
+
+        drake.cancel(true);
+
         return {
           tree: {
             ...tree,
