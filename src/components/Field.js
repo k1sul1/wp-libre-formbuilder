@@ -16,7 +16,8 @@ class Field extends Component {
 
   render() {
     console.log(this.props);
-    const TagName = this.props.fdata.tagName || this.props.fdata.fdata.tagName; // Flatten it...
+    // const TagName = this.props.fdata.tagName || this.props.fdata.fdata.tagName; // Flatten it...
+    const TagName = this.props.fdata.tagName;
 
     if (!TagName) {
       console.error('Something is wrong.', this.props);

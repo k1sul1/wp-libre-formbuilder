@@ -8,8 +8,9 @@ import Field from './Field';
 import builderStyle from './Builder.module.styl';
 import fieldStyle from './Field.module.styl';
 
-console.log(`Restoring a form works, but trying to drag those existing fields into new places results in a weird error.
-Problem seems to be that there's no tag name?`);
+// console.log(`Restoring a form works, but trying to drag those existing fields into new places results in a weird error.
+// Problem seems to be that there's no tag name?`);
+console.log('When dragging multiple fields they just disappear, but can be saved, though they won\'t appear in the DOM (but exist in state)');
 
 class Builder extends Component {
   constructor() {
@@ -39,13 +40,14 @@ class Builder extends Component {
       const field = tree[id];
       console.log(field, id, this.state.tree);
       // This tagName fetch is ridiculous
-      const element = el(field.fdata.tagName || field.fdata.fdata.tagName, {
-        ...field.fdata.attributes,
+      // const element = el(field.fdata.tagName, {
+      const element = el(field.tagName || field.fdata.tagName, {
+        ...(field.attributes || field.fdata.attributes),
         'data-wplfb-id': id,
       });
 
-      if (field.fdata.childrenHTML) {
-        element.innerHTML = field.fdata.childrenHTML; // Sorry.
+      if (field.childrenHTML || field.fdata.childrenHTML) {
+        element.innerHTML = field.childrenHTML || field.fdata.childrenHTML; // Sorry.
       }
 
       return element;
@@ -318,15 +320,27 @@ class Builder extends Component {
           }
         }
 
-        const node = {
+        let node = {};
+        node = {
           id: id,
           isRoot,
           options: {},
           parent,
           children: Array.from(children).filter((child) => child.getAttribute('data-id') ? true : false),
-          field, // remove
-          fdata: field,
         };
+
+        if (field.fdata) {
+          node = {
+            ...node,
+            ...field.fdata,
+          };
+        } else {
+          node = {
+            ...node,
+            field: field, // remove,
+            fdata: field,
+          };
+        }
 
 
         drake.cancel(true);
@@ -364,7 +378,7 @@ class Builder extends Component {
     }
 
     return (
-      <Field fdata={field} key={field.id}>
+      <Field fdata={field.fdata || field} key={field.id}>
       <div> {/* Useless div, only wraps wplf-child-container */}
       {
         children.map((id) => {
