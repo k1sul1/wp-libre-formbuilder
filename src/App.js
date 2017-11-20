@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import Builder from './components/Builder';
+import BetterBuilder from './components/BetterBuilder';
+// import Builder from './components/Builder';
 
 import 'normalize.css'
 import './App.styl';
 
 class App extends Component {
   render() {
-    return <Builder />;
+    return <BetterBuilder />;
+    // return <Builder />;
   }
 }
 
