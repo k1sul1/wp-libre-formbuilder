@@ -261,10 +261,10 @@ class WP_Libre_Formbuilder {
 
     $this->fields[$data["key"]] = [
       "name" => apply_filters("wplfb-field-name", $data["name"], $data),
-      "html" => apply_filters("wplfb-field-html", $data["html"], $data),
+      "html" => apply_filters("wplfb-field-html", $data["html"], $data), // Is this any good? Could be for something, not for this directly
       "dom" => apply_filters("wplfb-field-dom", $this->generateDOM($data["html"]), $data),
-      "takesChildren" => apply_filters("wplfb-field-children", \WPLFB\booleanify($data["takesChildren"]), $data),
-      "wplfbKey" => $data["key"],
+      "takesChildren" => apply_filters("wplfb-field-children", \WPLFB\booleanify($data["takesChildren"]), $data), // this isn't useful, remove
+      "wplfbKey" => $data["key"], // this is a duplicate, get rid of it
     ]; // PHP casts it into an array if it's null.
 
     return $this->fields[$data["key"]];

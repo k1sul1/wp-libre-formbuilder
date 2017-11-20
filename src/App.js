@@ -7,7 +7,10 @@ import './App.styl';
 
 class App extends Component {
   render() {
-    return <BetterBuilder />;
+    return (
+      <BetterBuilder />
+    );
+
     // return <Builder />;
   }
 }

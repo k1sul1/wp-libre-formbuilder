@@ -1,0 +1,41 @@
+@import '../Variables'
+
+
+.builder {
+  &__wrapper {
+    padding-top: 3rem
+    display: flex
+    flex-flow: row wrap
+    justify-content: space-between
+    background: colors.grey
+    min-height: 100%
+    width: 100%
+  }
+
+  &__header {
+    width: 100%
+    position: fixed
+    top: 0
+    left: 0
+    height: 3rem
+    background: colors.dark_grey
+    display: flex
+    flex-flow: row nowrap
+    align-items: center
+    justify-content: center
+  }
+
+  &__workbench {
+    background: colors.white
+    flex-basis: 65%
+    min-height: calc(100vh - 3rem)
+    padding: 1rem
+  }
+
+  &__sidebar {
+    background: colors.grey
+    flex-basis: 35%
+    min-height: calc(100vh - 3rem)
+    padding: 1rem
+  }
+}

@@ -25,3 +25,6 @@ If a field contains an element with the class wplfb-child-container, it can have
  - sibling element ids
 
  The object is used to make the state aware of where the field is placed, because the builder will be rerendered from the state. React will lose its shit about the dom changes otherwise. It's also less error prone because if you break it, it will break instantly and not later on when 90% is done.
+
+ # Notes
+ - Do not support textContent, it's way too much work for way too much effort. Everything has to be inside a tag.
