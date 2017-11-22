@@ -19,8 +19,10 @@ export async function getFields() {
         key,
         tagName: element,
         attributes,
-        fieldChildren: children,
+        fieldChildren: children, // FIX THIS
       };
+
+      console.log('getFields broken');
 
       return acc;
     }, {});

@@ -1,14 +1,45 @@
 import React, { Component } from 'react';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
+import PropTypes from 'prop-types'
+import { kea } from 'kea'
 
-import App from './App';
 import Aside from './Aside';
 import { getFields } from '../lib/wp';
 import errorHandler from '../lib/errorHandler';
 import './Builder.styl'
 
 @DragDropContext(HTML5Backend)
+@kea({
+  actions: () => ({
+    increment: (amount) => ({ amount }),
+    decrement: (amount) => ({ amount }),
+    addField: (field) => ({ ...field }),
+  }),
+
+  reducers: ({ actions }) => ({
+    counter: [0, PropTypes.number, {
+      [actions.increment]: (state, payload) => state + payload.amount,
+      [actions.decrement]: (state, payload) => state - payload.amount,
+    }],
+    fields: [{}, PropTypes.object, {
+      [actions.addField]: (state, payload) => {
+        return {
+          ...state,
+          ...payload,
+        }
+      },
+    }]
+  }),
+
+  selectors: ({ selectors }) => ({
+    doubleCounter: [
+      () => [selectors.counter],
+      (counter) => counter * 2,
+      PropTypes.number
+    ]
+  })
+})
 export default class BetterBuilder extends Component {
   classes = {
     wrapper: 'builder__wrapper',
@@ -20,11 +51,20 @@ export default class BetterBuilder extends Component {
   async componentDidMount() {
     const fields = await getFields().catch(errorHandler.fatal);
 
-    console.log(fields);
+    Object.entries(fields).forEach(([key, data]) => {
+      this.actions.increment(1);
+      this.actions.addField({
+        [key]: data,
+      });
+    });
   }
 
+
   render() {
-    return (
+    const { counter, fields } = this.props
+      // const { increment, decrement } = this.actions
+
+      return (
       <div className={this.classes.wrapper}>
         <header className={this.classes.header}>
           <select name="form"
@@ -34,7 +74,7 @@ export default class BetterBuilder extends Component {
             <option value="0">New</option>
           </select>
         <button onClick={() => this.saveForm()}>
-          Save
+          Save {counter}
         </button>
 
       </header>
@@ -43,8 +83,7 @@ export default class BetterBuilder extends Component {
         ref={(el) => { this.workbench = el }}>
       </div>
 
-        <Aside className={this.classes.sidebar} />
-        <App />
+        <Aside className={this.classes.sidebar} fields={fields} />
       </div>
     );
   }

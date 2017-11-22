@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "custom-react-scripts": "^0.2.1",
+    "kea": "^0.27.3",
     "normalize.css": "^7.0.0",
     "prop-types": "^15.6.0",
     "react": "^16.1.1",
@@ -14,6 +15,7 @@
     "react-html-parser": "^2.0.1",
     "react-redux": "^5.0.6",
     "redom": "^3.7.0",
+    "reselect": "^3.0.1",
     "shortid": "^2.2.8"
   },
   "scripts": {
