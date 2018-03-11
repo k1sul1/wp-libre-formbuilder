@@ -74,7 +74,7 @@ export default class BetterBuilder extends Component {
             ref={(el) => { this.formselect = el }}
           >
             {Object.entries(forms).map(([name, data]) => (
-              <option value={data.form.ID}>{name}</option>
+              <option value={data.form.ID} key={data.form.ID}>{name}</option>
             ))}
             <option value="0">New</option>
           </select>
