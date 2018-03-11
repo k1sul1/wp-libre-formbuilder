@@ -64,7 +64,6 @@ export default class BetterBuilder extends Component {
   render() {
     const { counter, fields, tree, forms } = this.props
       // const { increment, decrement } = this.actions
-      console.log(forms)
 
       return (
       <div className={this.classes.wrapper}>

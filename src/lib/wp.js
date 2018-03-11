@@ -44,7 +44,7 @@ export async function getFields() {
         acc[key] = {
           key,
           tagName: element,
-          attributes,
+          attributes: transformAttributes(attributes),
           fieldChildren: children, // FIX THIS
         }
 
@@ -60,6 +60,22 @@ export async function getFields() {
   } catch(e) {
     return e
   }
+}
+
+export function transformAttributes(obj = {}) {
+  // const { for: htmlFor, class: className } = obj
+  const replaceDict = { 'class': 'className', 'for': 'htmlFor' }
+  const newObj = Object.entries(obj).reduce((acc, [key, value]) => {
+    if (replaceDict[key]) {
+      acc[replaceDict[key]] = value
+      return acc
+    }
+
+    acc[key] = value
+    return acc
+  }, {})
+
+  return newObj
 }
 
 export default wp
