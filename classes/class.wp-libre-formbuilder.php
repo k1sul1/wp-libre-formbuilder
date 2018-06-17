@@ -28,11 +28,11 @@ class WP_Libre_Formbuilder {
 
     add_action("save_post", function($post_id, $post) {
       if ($post->post_type === "wplfb-field") {
-        $children = !isset($_POST["wplfb-field-children"]) ? 0 : $_POST["wplfb-field-children"];
         $template = !empty($_POST["wplfb-field-template"]) ? $_POST["wplfb-field-template"] : "";
+        $label = !empty($_POST["wplfb-field-label"]) ? $_POST["wplfb-field-label"] : false;
 
-        update_post_meta($post_id, "wplfb-field-children", $children);
         update_post_meta($post_id, "wplfb-field-template", $template);
+        update_post_meta($post_id, "wplfb-field-label", $label);
       }
     }, 10, 2);
 
@@ -74,9 +74,11 @@ class WP_Libre_Formbuilder {
       </label><br>
 
       <label>
-      <input type="checkbox" name="wplfb-field-children" value="1" <?=checked(1, get_post_meta($post->ID, "wplfb-field-children", true))?>>
-        Field accepts children
-      </label>
+        <strong>Field label</strong>
+        <input name="wplfb-field-label" value="<?=get_post_meta($post->ID, "wplfb-field-label", true)?>">
+      </label><br>
+
+      <label>
       <?php
         var_dump($post);
       },
@@ -229,6 +231,7 @@ class WP_Libre_Formbuilder {
         "name" => $p->post_title,
         "field" => $p->post_content,
         "template" => get_post_meta($p->ID, "wplfb-field-template", true),
+        "label" => get_post_meta($p->ID, "wplfb-field-label", true),
         // "takesChildren" => \WPLFB\booleanify(get_post_meta($p->ID, "wplfb-field-children", true)),
       ]);
 
@@ -260,6 +263,8 @@ class WP_Libre_Formbuilder {
       throw new Exception("Field is mandatory (html)");
     } else if (!isset($data["template"])) {
       throw new Exception("Field template is mandatory");
+    } else if (!isset($data["label"])) {
+      throw new Exception("Field label is mandatory");
     }
 
     if (!empty($this->fields[$data["key"]])) {
@@ -268,8 +273,9 @@ class WP_Libre_Formbuilder {
 
     $this->fields[$data["key"]] = [
       "name" => apply_filters("wplfb-field-name", $data["name"], $data),
-      "field" => apply_filters("wplfb-field-field", $data["field"], $data), // Is this any good? Could be for something, not for this directly
-      "template" => apply_filters("wplfb-field-template", $data["template"], $data), // Is this any good? Could be for something, not for this directly
+      "field" => apply_filters("wplfb-field-field", $data["field"], $data),
+      "template" => apply_filters("wplfb-field-template", $data["template"], $data),
+      "label" => apply_filters("wplfb-field-label", $data["label"], $data),
     ]; // PHP casts it into an array if it's null.
 
     return $this->fields[$data["key"]];
