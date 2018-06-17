@@ -4,7 +4,10 @@
   "description": "> Formbuilder addon for WP Libre Form",
   "main": "index.js",
   "scripts": {
-    "updateBuilder": "rm -rf builder && git clone git@github.com:k1sul1/wp-libreformbuilder-js.git builder && rm -rf builder/.git"
+    "clean": "rm -rf builder",
+    "clone": "git clone git@github.com:k1sul1/wp-libreformbuilder-js.git buildertmp",
+    "build": "cd buildertmp && npm run build && mv static ../builder && cd .. && rm -rf buildertmp",
+    "updateBuilder": "npm-run-all clean clone build"
   },
   "repository": {
     "type": "git",
@@ -15,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/k1sul1/wp-libre-formbuilder/issues"
   },
-  "homepage": "https://github.com/k1sul1/wp-libre-formbuilder#readme"
+  "homepage": "https://github.com/k1sul1/wp-libre-formbuilder#readme",
+  "dependencies": {
+    "npm-run-all": "^4.1.3"
+  }
 }

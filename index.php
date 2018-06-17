@@ -13,7 +13,6 @@
  */
 
 $package = json_decode(file_get_contents("package.json", "r"));
-$manifest = json_decode(file_get_contents("build/asset-manifest.json", "r"));
 
 register_activation_hook(__FILE__, function() {
   $php_version = phpversion();
@@ -41,12 +40,13 @@ register_activation_hook(__FILE__, function() {
 
 register_deactivation_hook(__FILE__, "flush_rewrite_rules");
 
-add_action("admin_enqueue_scripts", function() use ($package, $manifest) {
-  $path = plugin_dir_url(__FILE__) . "/build/";
+add_action("admin_enqueue_scripts", function() use ($package) {
+  $path = plugin_dir_url(__FILE__) . "/builder/";
   $version = $package->version;
 
-  wp_enqueue_style("wplfb-css", $path . $manifest->{"main.css"}, false, null);
-  wp_enqueue_script("wplfb-js", $path . $manifest->{"main.js"}, [], null, true);
+  // wp_enqueue_style("wplfb-css", $path . "main.css", false, $version);
+  wp_enqueue_script("wplfb-js-deps", $path . "common.bundle.js", [], $version, true);
+  wp_enqueue_script("wplfb-js", $path . "builder.bundle.js", ["wplfb-js-deps"], $version, true);
 });
 
 if (function_exists('xdebug_disable')) {
