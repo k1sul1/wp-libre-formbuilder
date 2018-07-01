@@ -34,6 +34,12 @@ class WP_Libre_Formbuilder {
         update_post_meta($post_id, "wplfb-field-template", $template);
         update_post_meta($post_id, "wplfb-field-label", $label);
       }
+
+      if ($post->post_type === "wplf-form") {
+        $state = !empty($_POST["wplfb-state"]) ? $_POST["wplfb-state"] : "";
+
+        update_post_meta($post_id, "wplfb-state", $state);
+      }
     }, 10, 2);
 
     add_action("add_meta_boxes", [$this, "tamperMetaBoxes"]);
@@ -89,14 +95,24 @@ class WP_Libre_Formbuilder {
     );
 
     add_meta_box(
-      "wplfb_buildarea",
+      "wplfb_form_metabox",
       "Form builder",
-      function() {
-        echo "Hello!";
-      },
+      function($post) { ?>
+        <div id="wplfb_buildarea">
+
+        </div>
+
+        <div id="wplfb_tools">
+          <label>
+            <strong>State</strong>
+            <input class="text" type="text" name="wplfb-state" value="<?=get_post_meta($post->ID, "wplfb-state", true)?>">
+          </label>
+        </div>
+      <?php },
       "wplf-form",
       "advanced",
-      "high"
+      "high",
+      [$GLOBALS["post"]]
     );
   }
 
