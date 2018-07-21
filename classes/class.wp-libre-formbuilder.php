@@ -36,7 +36,7 @@ class WP_Libre_Formbuilder {
       }
 
       if ($post->post_type === "wplf-form") {
-        $state = !empty($_POST["wplfb-state"]) ? $_POST["wplfb-state"] : "";
+        $state = !empty($_POST["wplfb-state"]) ? addslashes(json_encode($_POST["wplfb-state"])) : "";
 
         update_post_meta($post_id, "wplfb-state", $state);
       }
@@ -97,7 +97,11 @@ class WP_Libre_Formbuilder {
     add_meta_box(
       "wplfb_form_metabox",
       "Form builder",
-      function($post) { ?>
+      function($post) {
+        $state = get_post_meta($post->ID, "wplfb-state", true);
+        if ($state) {
+          $state = trim(stripslashes(stripslashes($state)), '"');
+        } ?>
         <div id="wplfb_buildarea">
 
         </div>
@@ -105,7 +109,7 @@ class WP_Libre_Formbuilder {
         <div id="wplfb_tools">
           <label>
             <strong>State</strong>
-            <input class="text" type="text" name="wplfb-state" value="<?=get_post_meta($post->ID, "wplfb-state", true)?>">
+            <input class="text" type="text" name="wplfb-state" value='<?=$state?>'>
           </label>
         </div>
       <?php },
