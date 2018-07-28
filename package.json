@@ -6,7 +6,7 @@
   "scripts": {
     "clean": "rm -rf builder",
     "clone": "git clone git@github.com:k1sul1/wp-libreformbuilder-js.git buildertmp",
-    "build": "cd buildertmp && git checkout feature/wp-admin-integration && npm install && npm run build && mv static ../builder && cd .. && rm -rf buildertmp",
+    "build": "cd buildertmp && npm install && npm run build && mv static ../builder && cd .. && rm -rf buildertmp",
     "updateBuilder": "npm-run-all clean clone build"
   },
   "repository": {
