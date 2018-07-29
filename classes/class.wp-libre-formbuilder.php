@@ -107,10 +107,7 @@ class WP_Libre_Formbuilder {
         </div>
 
         <div id="wplfb_tools">
-          <label>
-            <strong>State</strong>
-            <input class="text" type="text" name="wplfb-state" value='<?=$state?>'>
-          </label>
+          <input class="hidden" type="text" name="wplfb-state" value='<?=$state?>'>
         </div>
       <?php },
       "wplf-form",
