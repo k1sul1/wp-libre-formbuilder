@@ -36,7 +36,7 @@ class WP_Libre_Formbuilder {
       }
 
       if ($post->post_type === "wplf-form") {
-        $state = !empty($_POST["wplfb-state"]) ? addslashes(json_encode($_POST["wplfb-state"])) : "";
+        $state = !empty($_POST["wplfb-state"]) ? addslashes(json_encode($_POST["wplfb-state"], JSON_UNESCAPED_UNICODE)) : "";
 
         update_post_meta($post_id, "wplfb-state", $state);
       }
