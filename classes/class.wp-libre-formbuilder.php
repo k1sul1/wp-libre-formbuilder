@@ -3,9 +3,6 @@
 // @codingStandardsIgnoreStart
 class WP_Libre_Formbuilder {
 // @codingStandardsIgnoreEnd
-  const ERR_FORM_ID_EMPTY = 'You must supply a form id.';
-  const FORM_SAVED = 'Form saved succesfully.';
-
   public static $instance;
   public $fields;
 
@@ -159,8 +156,6 @@ class WP_Libre_Formbuilder {
         // The key already exists; do not add it again or overwrite it.
         // Combine with a huge notice in field edit page.
         update_post_meta($p->ID, "wplfb-field-override", true);
-      } else {
-        // I'd love to store the DOM in meta ($ok["dom"]) but I do not want to do it every time.
       }
     }
 
