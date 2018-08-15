@@ -1,6 +1,8 @@
 <?php
 
+// @codingStandardsIgnoreStart
 class WP_Libre_Formbuilder {
+// @codingStandardsIgnoreEnd
   const ERR_FORM_ID_EMPTY = 'You must supply a form id.';
   const FORM_SAVED = 'Form saved succesfully.';
 
@@ -18,7 +20,7 @@ class WP_Libre_Formbuilder {
   public function __construct() {
     add_action("init", [$this, "registerCPT"]);
 
-    add_filter("user_can_richedit", function($x) {
+    add_filter("user_can_richedit", function ($x) {
       if (isset($GLOBALS["post"]) && $GLOBALS["post"]->post_type === "wplfb-field") {
         return false;
       }
@@ -26,7 +28,7 @@ class WP_Libre_Formbuilder {
       return $x;
     });
 
-    add_action("save_post", function($post_id, $post) {
+    add_action("save_post", function ($post_id, $post) {
       if ($post->post_type === "wplfb-field") {
         $template = !empty($_POST["wplfb-field-template"]) ? $_POST["wplfb-field-template"] : "";
         $label = !empty($_POST["wplfb-field-label"]) ? $_POST["wplfb-field-label"] : false;
@@ -36,7 +38,9 @@ class WP_Libre_Formbuilder {
       }
 
       if ($post->post_type === "wplf-form") {
-        $state = !empty($_POST["wplfb-state"]) ? addslashes(json_encode($_POST["wplfb-state"], JSON_UNESCAPED_UNICODE)) : "";
+        $state = !empty($_POST["wplfb-state"])
+          ? addslashes(json_encode($_POST["wplfb-state"], JSON_UNESCAPED_UNICODE))
+          : "";
 
         update_post_meta($post_id, "wplfb-state", $state);
       }
@@ -72,8 +76,8 @@ class WP_Libre_Formbuilder {
     add_meta_box(
       "wplfb_field_options",
       "Field options",
-      function($post) {
-      ?>
+      function ($post) {
+        ?>
       <label>
         <strong>Field template</strong>
         <textarea name="wplfb-field-template"><?=get_post_meta($post->ID, "wplfb-field-template", true)?></textarea>
@@ -85,7 +89,7 @@ class WP_Libre_Formbuilder {
       </label><br>
 
       <label>
-      <?php
+        <?php
         var_dump($post);
       },
       "wplfb-field",
@@ -97,7 +101,7 @@ class WP_Libre_Formbuilder {
     add_meta_box(
       "wplfb_form_metabox",
       "Form builder",
-      function($post) {
+      function ($post) {
         $state = get_post_meta($post->ID, "wplfb-state", true);
         if ($state) {
           $state = trim(stripslashes(stripslashes($state)), '"');
@@ -233,7 +237,6 @@ class WP_Libre_Formbuilder {
   }
 
   public function getField(WP_REST_Request $request) {
-
   }
 
   public function getFields(WP_REST_Request $request) {
@@ -272,15 +275,15 @@ class WP_Libre_Formbuilder {
   public function addField($data = []) {
     if (empty($data)) {
       throw new Exception("You must supply the field data");
-    } else if (empty($data["key"])) {
+    } elseif (empty($data["key"])) {
       throw new Exception("Field key is mandatory. Numerical keys *will* override database entries.");
-    } else if (empty($data["name"])) {
+    } elseif (empty($data["name"])) {
       throw new Exception("Field name is mandatory");
-    } else if (empty($data["field"])) {
+    } elseif (empty($data["field"])) {
       throw new Exception("Field is mandatory (html)");
-    } else if (!isset($data["template"])) {
+    } elseif (!isset($data["template"])) {
       throw new Exception("Field template is mandatory");
-    } else if (!isset($data["label"])) {
+    } elseif (!isset($data["label"])) {
       throw new Exception("Field label is mandatory");
     }
 

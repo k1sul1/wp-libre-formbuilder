@@ -27,7 +27,7 @@ register_activation_hook(__FILE__, function () {
 
   if (!$php_ok) {
     $message .= "Minimum PHP version required is 5.6. Yours is {$php_version}. ";
-  } else if (!$wp_ok) {
+  } elseif (!$wp_ok) {
     $message .= "Minimum WP version required is 4.7. Yours is {$wp_version}. ";
   }
 
