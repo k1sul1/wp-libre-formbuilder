@@ -56,7 +56,5 @@ if (function_exists('xdebug_disable')) {
 }
 
 
-// require_once "vendor/autoload.php";
-require_once "helpers.php";
 require_once "classes/class.wp-libre-formbuilder.php";
 WP_Libre_Formbuilder::instance();

@@ -128,61 +128,6 @@ class WP_Libre_Formbuilder {
         return $this->getFields($request);
       },
     ]);
-
-    register_rest_route("wplfb", "/forms/forms", [
-      "methods" => "GET",
-      "callback" => function (WP_REST_Request $request) {
-        return $this->getForms($request);
-      },
-    ]);
-
-    register_rest_route("wplfb", "/forms/form", [
-      "methods" => "GET",
-      "callback" => function (WP_REST_Request $request) {
-        return $this->getForm($request);
-      },
-    ]);
-
-    register_rest_route("wplfb", "/forms/form", [
-      "methods" => "POST",
-      "callback" => function (WP_REST_Request $request) {
-        return $this->saveForm($request);
-      },
-    ]);
-  }
-
-  public function getForms(WP_REST_Request $request) {
-    // require auth for this
-    $plist = get_posts([
-      "post_type" => "wplf-form",
-      "posts_per_page" => -1
-    ]);
-
-    foreach ($plist as $p) {
-      $result[] = [
-        "form" => $p,
-        "fields" => get_post_meta($p->ID, "wplfb_fields", true)
-      ];
-    }
-
-    return new WP_REST_Response($result);
-  }
-
-  public function getForm(WP_REST_Request $request) {
-    $form_id = $request->get_param("form_id");
-
-    if (is_null($form_id)) {
-      return new WP_REST_Response([
-        "error" => self::ERR_FORM_ID_EMPTY
-      ]);
-    }
-
-    $p = get_post((int) $form_id);
-
-    return new WP_REST_Response([
-      "form" => $p,
-      "fields" => get_post_meta($p->ID, "wplfb_fields", true)
-    ]);
   }
 
   /**
@@ -194,50 +139,6 @@ class WP_Libre_Formbuilder {
     return json_decode(file_get_contents('php://input'));
   }
 
-  public function saveForm(WP_REST_Request $request) {
-    $form_id = $request->get_param("form_id");
-    $params = $this->getRequestBody();
-    $fields = !empty($params->fields) ? $params->fields : false;
-    $html = !empty($params->html) ? $params->html : false;
-
-    if (!$fields) {
-      return new WP_REST_Response([
-        "error" => "No tree provided.",
-      ]);
-    }
-
-    $is_insert = is_null($form_id);
-
-    // Stop messing with the HTML!
-    remove_all_filters("content_save_pre");
-
-    $args = [
-      "ID" => !$is_insert ? $form_id : 0,
-      "post_content" => $html,
-      "post_type" => "wplf-form",
-      "post_status" => "publish",
-    ];
-
-    $fn = !$is_insert
-      ? "wp_update_post"
-      : "wp_insert_post";
-    $insert = $fn($args);
-
-    if (!is_wp_error($insert) && $insert !== 0) {
-      update_post_meta($insert, "wplfb_fields", $fields); // Sanitize?
-      return new WP_REST_Response([
-        "success" => self::FORM_SAVED,
-        "fields" => $fields
-      ]);
-    } else {
-      return new WP_REST_Response([
-        "error" => $insert
-      ]);
-    }
-  }
-
-  public function getField(WP_REST_Request $request) {
-  }
 
   public function getFields(WP_REST_Request $request) {
     $codefields = apply_filters("wplfb-available-code-fields", $this->fields);
@@ -252,7 +153,6 @@ class WP_Libre_Formbuilder {
         "field" => $p->post_content,
         "template" => get_post_meta($p->ID, "wplfb-field-template", true),
         "label" => get_post_meta($p->ID, "wplfb-field-label", true),
-        // "takesChildren" => \WPLFB\booleanify(get_post_meta($p->ID, "wplfb-field-children", true)),
       ]);
 
       if (!$ok) {
