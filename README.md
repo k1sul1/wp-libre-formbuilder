@@ -2,6 +2,18 @@
 
 Work in progress, watch this space
 
+## How does it work
+Think of it as a preprocessor for WP Libre Form. It generates HTML from the building blocks you create. Obviously there's some built-in building blocks as well.
+
+That means that any of the usual features should work just fine. Dynamic values? Check. Multilinguality support with Polylang? Check.
+
+## How to add fields
+Using wp-admin: /wp-admin/post-new.php?post_type=wplfb-field
+
+1. Put the input element in the standard content field. Every\* attribute you define at the root node is customizable, meaning you can spesify id, class, name, or custom attributes from the builder.
+2. If you wish to have a label (which you certainly should have!), add the label to the *Field label* field in the metabox below the content.
+3. If you wish to wrap the input element with more HTML, add the wrapping HTML to the *Field template*  field in the metabox below the content. See `Templates` down below.
+
 ## Wrapper fields
 Sometimes you want to nest fields, or group them in logical sections. Wrapper fields allow you to do just that. They're normal fields but they don't contain any inputs themselves, usually.
 
