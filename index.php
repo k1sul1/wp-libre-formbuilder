@@ -62,22 +62,16 @@ add_action("admin_enqueue_scripts", function ($hook) use ($package, $manifest) {
   wp_enqueue_script("wplfb-js", $path . $manifest->{"main.js"}, [], $version, true);
 
   $active = get_post_meta($post->ID, "wplfb-enabled", true);
-  $state = stripslashes(stripslashes(get_post_meta($post->ID, "wplfb-state", true)));
+  $state = stripslashes(get_post_meta($post->ID, "wplfb-state", true));
 
-  // Can only pass strings
   // Can only pass strings
   wp_localize_script("wplfb-js", "wplfb", [
     "isAdmin" => "1",
     "state" => $state,
     "active" => !empty($active) && $active === "1" ? 1 : 0,
+    "restURL" => rest_url(),
   ]);
 });
-
-if (function_exists('xdebug_disable')) {
-  // Those fugly HTML tables sure do not help when dealing with REST..
-  xdebug_disable();
-}
-
 
 require_once "classes/class.wp-libre-formbuilder.php";
 WP_Libre_Formbuilder::instance();

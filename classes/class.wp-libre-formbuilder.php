@@ -49,6 +49,8 @@ class WP_Libre_Formbuilder {
 
     add_action("add_meta_boxes", [$this, "tamperMetaBoxes"]);
     add_action("rest_api_init", [$this, "registerRESTRoutes"]);
+
+    $this->registerDefaultFields();
   }
 
   public function registerCPT() {
@@ -170,19 +172,69 @@ class WP_Libre_Formbuilder {
     ]);
   }
 
+  public function registerDefaultFields() {
+    $fields = [
+      "C0" => [
+        "name" => "Wrapper",
+        "field" => '<div class="wplfb-wrapper" id="wrapper_#"><div class="wplfb-child-container"></div></div>',
+        // "template" => null,
+        // "label" => null,
+      ],
+
+      "C1" => [
+        "name" => "Text",
+        "field" => '<input type="text" name="textinput" class="" placeholder="...">',
+        "template" => '<div class="wplfb-input"><div class="wplfb-field-container"></div></div>',
+        "label" => "Default label",
+      ],
+
+      "C2" => [
+        "name" => "Email",
+        "field" => '<input type="email" name="email" class="" placeholder="someone@example.com">',
+        "template" => '<div class="wplfb-input"><div class="wplfb-field-container"></div></div>',
+        "label" => "Enter your email address",
+      ],
+
+      "C3" => [
+        "name" => "Password",
+        "field" => '<input type="password" name="password" class="" placeholder="hunter2">',
+        "template" => '<div class="wplfb-input"><div class="wplfb-field-container"></div></div>',
+        "label" => "Enter your password",
+      ],
+
+      "C4" => [
+        "name" => "Submit",
+        "field" => '<input type="submit" value="Submit">',
+      ]
+    ];
+
+    foreach ($fields as $index => $value) {
+      $this->addField(array_merge($value, [
+        "key" => $index,
+      ]));
+    }
+  }
+
   public function addField($data = []) {
+    $data = array_merge([
+      "key" => null,
+      "name" => null,
+      "field" => null,
+      "template" => null,
+      "label" => null,
+    ], $data);
     if (empty($data)) {
       throw new Exception("You must supply the field data");
     } elseif (empty($data["key"])) {
       throw new Exception("Field key is mandatory. Numerical keys *will* override database entries.");
     } elseif (empty($data["name"])) {
-      throw new Exception("Field name is mandatory");
+      // throw new Exception("Field name is mandatory");
     } elseif (empty($data["field"])) {
-      throw new Exception("Field is mandatory (html)");
+      throw new Exception("Field is mandatory");
     } elseif (!isset($data["template"])) {
-      throw new Exception("Field template is mandatory");
+      // throw new Exception("Field template is mandatory");
     } elseif (!isset($data["label"])) {
-      throw new Exception("Field label is mandatory");
+      // throw new Exception("Field label is mandatory");
     }
 
     if (!empty($this->fields[$data["key"]])) {
