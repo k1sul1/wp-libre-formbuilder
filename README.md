@@ -1,6 +1,10 @@
 # WP Libre Formbuilder
 
-Work in progress, watch this space
+Work in progress, watch this space. 
+
+It works, but it's in alpha.
+
+![screenshot](https://i.imgur.com/j6xrCZT.png)
 
 ## How does it work
 Think of it as a preprocessor for WP Libre Form. It generates HTML from the building blocks you create. Obviously there's some built-in building blocks as well.
