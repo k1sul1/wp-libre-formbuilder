@@ -36,10 +36,14 @@ class WP_Libre_Formbuilder {
 
       if ($post->post_type === "wplf-form") {
         $state = !empty($_POST["wplfb-state"])
-          ? addslashes(json_encode($_POST["wplfb-state"], JSON_UNESCAPED_UNICODE))
+          ? wp_json_encode($_POST["wplfb-state"], JSON_UNESCAPED_UNICODE)
           : "";
+        $enabled = !empty($_POST["wplfb-enabled"])
+          ? sanitize_text_field($_POST["wplfb-enabled"])
+          : "0";
 
         update_post_meta($post_id, "wplfb-state", $state);
+        update_post_meta($post_id, "wplfb-enabled", $enabled);
       }
     }, 10, 2);
 
@@ -98,17 +102,16 @@ class WP_Libre_Formbuilder {
     add_meta_box(
       "wplfb_form_metabox",
       "Form builder",
-      function ($post) {
-        $state = get_post_meta($post->ID, "wplfb-state", true);
-        if ($state) {
-          $state = trim(stripslashes(stripslashes($state)), '"');
-        } ?>
+      function ($post) { ?>
         <div id="wplfb_buildarea">
-
+          <p>WP Libre Formbuilder is loading...</p>
         </div>
 
         <div id="wplfb_tools">
-          <input class="hidden" type="text" name="wplfb-state" value='<?=$state?>'>
+          <!-- Only used for saving state, it's not read from here -->
+          <input class="hidden" type="text" name="wplfb-state">
+          <!-- Same with this -->
+          <input type="hidden" name="wplfb-enabled" value="0">
         </div>
       <?php },
       "wplf-form",

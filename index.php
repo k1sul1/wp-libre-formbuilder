@@ -41,13 +41,36 @@ register_activation_hook(__FILE__, function () {
 
 register_deactivation_hook(__FILE__, "flush_rewrite_rules");
 
-add_action("admin_enqueue_scripts", function () use ($package, $manifest) {
+add_action("admin_enqueue_scripts", function ($hook) use ($package, $manifest) {
+  global $post;
+
+  // make sure we're on the correct view
+  if ($hook !== 'post-new.php' && $hook !== 'post.php') {
+    return;
+  }
+
+  // only for this cpt
+  if ($post->post_type !== 'wplf-form') {
+    return;
+  }
+
   $path = plugin_dir_url(__FILE__) . "/builder/";
   $version = $package->version;
 
   // wp_enqueue_style("wplfb-css", $path . "main.css", false, $version);
   wp_enqueue_style("wplfb-css", $path . $manifest->{"main.css"}, [], $version);
   wp_enqueue_script("wplfb-js", $path . $manifest->{"main.js"}, [], $version, true);
+
+  $active = get_post_meta($post->ID, "wplfb-enabled", true);
+  $state = stripslashes(stripslashes(get_post_meta($post->ID, "wplfb-state", true)));
+
+  // Can only pass strings
+  // Can only pass strings
+  wp_localize_script("wplfb-js", "wplfb", [
+    "isAdmin" => "1",
+    "state" => $state,
+    "active" => !empty($active) && $active === "1" ? 1 : 0,
+  ]);
 });
 
 if (function_exists('xdebug_disable')) {
