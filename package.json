@@ -1,6 +1,6 @@
 {
   "name": "wp-libre-formbuilder",
-  "version": "0.0.1",
+  "version": "1.0-alpha",
   "description": "> Formbuilder addon for WP Libre Form",
   "main": "index.js",
   "scripts": {
