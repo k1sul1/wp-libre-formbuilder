@@ -34,7 +34,7 @@ Sometimes you want to nest fields, or group them in logical sections. Wrapper fi
 The class `wplfb-child-container` is mandatory.
 
 ## Templates
-In addition to having just plain old <input> (and relatives) elements, you can provide a template that wraps your field.
+In addition to having wrapper fields, you can provide a template that wraps your field. Useful for adding boilerplate around the inputs allowing you to utilize the power of CSS frameworks like Bootstrap, Foundation, or Pure. Templates can't have configurable parameters. But you can probably use wrapper fields to achieve that and live.
 
 ```
 <div>
