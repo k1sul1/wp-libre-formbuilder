@@ -3,7 +3,7 @@
  * Plugin name: WP Libre Formbuilder
  * Plugin URI: https://github.com/k1sul1/wp-libre-form
  * Description: Formbuilder for WP Libre Form
- * Version: 1.0.0-alpha
+ * Version: 1.0.2-alpha
  * Author: @k1sul1
  * Author URI: https://github.com/k1sul1/
  * License: GPLv2
