@@ -12,6 +12,9 @@
  *
  */
 
+require_once "classes/class.wp-libre-formbuilder.php";
+define("WPLFB_VERSION", "1.0.2-alpha");
+
 $package = json_decode(file_get_contents("package.json", "r"));
 $manifest = json_decode(file_get_contents("builder/asset-manifest.json", "r"));
 
@@ -73,5 +76,23 @@ add_action("admin_enqueue_scripts", function ($hook) use ($package, $manifest) {
   ]);
 });
 
-require_once "classes/class.wp-libre-formbuilder.php";
-WP_Libre_Formbuilder::instance();
+
+if (function_exists("wplf")) {
+  add_action("plugins_loaded", function () {
+    $wplf = wplf();
+    $builder = WP_Libre_Formbuilder::instance();
+
+    $wplf->plugins->register([
+      "name" => "Formbuilder",
+      "description" => "Visual editor for the HTML impaired.",
+      "link" => "https://github.com/k1sul1/wp-libre-formbuilder",
+      "version" => WPLFB_VERSION,
+      "instance" => $builder,
+      "settings_page" => [$builder, "render_settings_page"],
+    ]);
+  });
+} else {
+  // Pre 1.5
+  WP_Libre_Formbuilder::instance();
+}
+
