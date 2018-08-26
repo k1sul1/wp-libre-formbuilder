@@ -4,7 +4,7 @@
 class WP_Libre_Formbuilder {
 // @codingStandardsIgnoreEnd
   public static $instance;
-  public $fields;
+  protected $fields;
 
   public static function instance() {
     if (is_null(self::$instance)) {
@@ -73,6 +73,20 @@ class WP_Libre_Formbuilder {
       "taxonomies" => apply_filters("wplfb_cpt_taxonomies", []),
       "show_in_rest" => true
     ]));
+  }
+
+  public function render_settings_page() {
+    ?>
+    <div class="wplfb-settings-page">
+      <h1>WP Libre Formbuilder settings</h1>
+      <p>
+        There's nothing here, yet.
+      </p>
+      <p>
+        Leave an issue on what should be controllable here if you'd like.
+      </p>
+    </div>
+    <?php
   }
 
   public function tamperMetaBoxes() {
