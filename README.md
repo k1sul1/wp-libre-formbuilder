@@ -35,7 +35,7 @@ wplf()->plugins->Formbuilder->addField([
 ## Wrapper fields
 Sometimes you want to nest fields, or group them in logical sections. Wrapper fields allow you to do just that. They're normal fields but they don't contain any inputs themselves, usually.
 
-```
+```html
 <div>
   <p>Elements before inputs</p>
   <div class="wplfb-child-container">
@@ -50,7 +50,7 @@ The class `wplfb-child-container` is mandatory.
 ## Templates
 In addition to having wrapper fields, you can provide a template that wraps your field. Useful for adding boilerplate around the inputs allowing you to utilize the power of CSS frameworks like Bootstrap, Foundation, or Pure. Templates can't have configurable parameters. But you can probably use wrapper fields to achieve that and live.
 
-```
+```html
 <div>
   <h3>This is a very important heading</h3>
 
