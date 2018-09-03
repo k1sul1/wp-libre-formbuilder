@@ -3,7 +3,7 @@
  * Plugin name: WP Libre Formbuilder
  * Plugin URI: https://github.com/k1sul1/wp-libre-form
  * Description: Formbuilder for WP Libre Form
- * Version: 1.0.2-alpha
+ * Version: 1.0.3-alpha
  * Author: @k1sul1
  * Author URI: https://github.com/k1sul1/
  * License: GPLv2
@@ -13,7 +13,7 @@
  */
 
 require_once "classes/class.wp-libre-formbuilder.php";
-define("WPLFB_VERSION", "1.0.2-alpha");
+define("WPLFB_VERSION", "1.0.3-alpha");
 
 $package = json_decode(file_get_contents("package.json", "r"));
 $manifest = json_decode(file_get_contents("builder/asset-manifest.json", "r"));
