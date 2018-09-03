@@ -195,7 +195,7 @@ class WP_Libre_Formbuilder {
 
       "C1" => [
         "name" => "Text",
-        "field" => '<input type="text" required="true" name="textinput" class="" placeholder="..."
+        "field" => '<input type="text" required name="textinput" class="" placeholder="Name"
           wplfbAttributes=\'{ "type": { "hidden": true } }\'>',
         "template" => '<div class="wplfb-input"><div class="wplfb-field-container"></div></div>',
         "label" => "Default label",
@@ -203,7 +203,7 @@ class WP_Libre_Formbuilder {
 
       "C2" => [
         "name" => "Email",
-        "field" => '<input type="email" name="email" class="" placeholder="someone@example.com"
+        "field" => '<input type="email" required name="email" class="" placeholder="someone@example.com"
           wplfbAttributes=\'{ "type": { "hidden": true } }\'>',
         "template" => '<div class="wplfb-input"><div class="wplfb-field-container"></div></div>',
         "label" => "Enter your email address",
