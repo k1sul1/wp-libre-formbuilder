@@ -105,9 +105,7 @@ class WP_Libre_Formbuilder {
         <input name="wplfb-field-label" value="<?=get_post_meta($post->ID, "wplfb-field-label", true)?>">
       </label><br>
 
-      <label>
         <?php
-        var_dump($post);
       },
       "wplfb-field",
       "advanced",
@@ -197,28 +195,31 @@ class WP_Libre_Formbuilder {
 
       "C1" => [
         "name" => "Text",
-        "field" => '<input type="text" name="textinput" class="" placeholder="...">',
+        "field" => '<input type="text" required="true" name="textinput" class="" placeholder="..."
+          wplfbAttributes=\'{ "type": { "hidden": true } }\'>',
         "template" => '<div class="wplfb-input"><div class="wplfb-field-container"></div></div>',
         "label" => "Default label",
       ],
 
       "C2" => [
         "name" => "Email",
-        "field" => '<input type="email" name="email" class="" placeholder="someone@example.com">',
+        "field" => '<input type="email" name="email" class="" placeholder="someone@example.com"
+          wplfbAttributes=\'{ "type": { "hidden": true } }\'>',
         "template" => '<div class="wplfb-input"><div class="wplfb-field-container"></div></div>',
         "label" => "Enter your email address",
       ],
 
       "C3" => [
         "name" => "Password",
-        "field" => '<input type="password" name="password" class="" placeholder="hunter2">',
+        "field" => '<input type="password" required name="password" class="" placeholder="hunter2"
+          wplfbAttributes=\'{ "type": { "hidden": true } }\'>',
         "template" => '<div class="wplfb-input"><div class="wplfb-field-container"></div></div>',
         "label" => "Enter your password",
       ],
 
       "C4" => [
         "name" => "Submit",
-        "field" => '<input type="submit" value="Submit">',
+        "field" => '<input type="submit" class="" value="Submit">',
       ]
     ];
 
