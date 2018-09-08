@@ -1,10 +1,15 @@
 # WP Libre Formbuilder
 
-Work in progress, watch this space.
+Free WYSIWYG formbuilder for WP Libre Form. Anyone who is able to write HTML is able to create fields that act as building blocks for the forms, and the outputted forms are rather accessible.
 
-It works, but it's in alpha.
+The plugin is in rather early development, and new features and improvements are subject to be added based on user feedback.
 
-![screenshot](https://i.imgur.com/j6xrCZT.png)
+## Screenshots
+
+![in move mode](/assets/screenshot-1.png)
+![in preview mode](/assets/screenshot-2.png)
+![in edit mode](/assets/screenshot-2.png)
+![in field add screen](/assets/screenshot-4.png)
 
 ## How does it work
 Think of it as a preprocessor for WP Libre Form. It generates HTML from the building blocks you create. Obviously there's some built-in building blocks as well.
@@ -15,9 +20,7 @@ That means that any of the usual features should work just fine. Dynamic values?
 ### The easy way
 Using wp-admin: /wp-admin/post-new.php?post_type=wplfb-field
 
-1. Put the input element in the standard content field. Every\* attribute you define at the root node is customizable, meaning you can spesify id, class, name, or custom attributes from the builder.
-2. If you wish to have a label (which you certainly should have!), add the label to the *Field label* field in the metabox below the content.
-3. If you wish to wrap the input element with more HTML, add the wrapping HTML to the *Field template*  field in the metabox below the content. See `Templates` down below.
+Follow the instructions in the Field metabox.
 
 ### Using PHP
 This assumes that you're running the latest version of WP Libre Form.
@@ -40,7 +43,7 @@ Sometimes you want to nest fields, or group them in logical sections. Wrapper fi
   <p>Elements before inputs</p>
   <div class="wplfb-child-container">
     <!-- Children can be put here! -->
-  </div
+  </div>
   <p>Elements after inputs</p>
 </div>
 ```
