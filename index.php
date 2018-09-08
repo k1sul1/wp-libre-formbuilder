@@ -3,7 +3,7 @@
  * Plugin name: WP Libre Formbuilder
  * Plugin URI: https://github.com/k1sul1/wp-libre-form
  * Description: Formbuilder for WP Libre Form
- * Version: 1.0.3-alpha
+ * Version: 1.0.0-beta
  * Author: @k1sul1
  * Author URI: https://github.com/k1sul1/
  * License: GPLv2
@@ -12,13 +12,9 @@
  *
  */
 
-require_once "classes/class.wp-libre-formbuilder.php";
-define("WPLFB_VERSION", "1.0.3-alpha");
+define("WPLFB_VERSION", "1.0.0-beta");
 
-$package = json_decode(file_get_contents("package.json", "r"));
-$manifest = json_decode(file_get_contents("builder/asset-manifest.json", "r"));
-
-register_activation_hook(__FILE__, function () {
+function wplfb_version_problems() {
   $php_version = phpversion();
   $wp_version = $GLOBALS["wp_version"];
   $is_56 = version_compare($php_version, 5.6, ">=");
@@ -34,64 +30,31 @@ register_activation_hook(__FILE__, function () {
     $message .= "Minimum WP version required is 4.7. Yours is {$wp_version}. ";
   }
 
-  if (!empty($message)) {
+  if (empty($message)) {
+    return false;
+  }
+
+  return $message;
+}
+
+function wplfb_activation_hook() {
+  $version_troubles = wplfb_version_problems();
+
+  if ($version_troubles) {
     deactivate_plugins(basename(__FILE__));
-    wp_die($message);
+    wp_die($version_troubles);
   }
 
   add_action("shutdown", "flush_rewrite_rules");
-});
-
-register_deactivation_hook(__FILE__, "flush_rewrite_rules");
-
-add_action("admin_enqueue_scripts", function ($hook) use ($package, $manifest) {
-  global $post;
-
-  // make sure we're on the correct view
-  if ($hook !== 'post-new.php' && $hook !== 'post.php') {
-    return;
-  }
-
-  if (!in_array($post->post_type, ['wplf-form', 'wplfb-field'])) {
-    return;
-  }
-
-  $path = plugin_dir_url(__FILE__) . "/builder/";
-  $version = $package->version;
-
-  // wp_enqueue_style("wplfb-css", $path . "main.css", false, $version);
-  wp_enqueue_style("wplfb-css", $path . $manifest->{"main.css"}, [], $version);
-  wp_enqueue_script("wplfb-js", $path . $manifest->{"main.js"}, [], $version, true);
-
-  $active = get_post_meta($post->ID, "wplfb-enabled", true);
-  $state = stripslashes(get_post_meta($post->ID, "wplfb-state", true));
-
-  // Can only pass strings
-  wp_localize_script("wplfb-js", "wplfb", [
-    "isAdmin" => "1",
-    "state" => $state,
-    "active" => !empty($active) && $active === "1" ? 1 : 0,
-    "restURL" => rest_url(),
-  ]);
-});
-
-
-if (function_exists("wplf")) {
-  add_action("plugins_loaded", function () {
-    $wplf = wplf();
-    $builder = WP_Libre_Formbuilder::instance();
-
-    $wplf->plugins->register([
-      "name" => "Formbuilder",
-      "description" => "Visual editor for the HTML impaired.",
-      "link" => "https://github.com/k1sul1/wp-libre-formbuilder",
-      "version" => WPLFB_VERSION,
-      "instance" => $builder,
-      "settings_page" => [$builder, "render_settings_page"],
-    ]);
-  });
-} else {
-  // Pre 1.5
-  WP_Libre_Formbuilder::instance();
 }
 
+register_activation_hook(__FILE__, "wplfb_activation_hook");
+register_deactivation_hook(__FILE__, "flush_rewrite_rules");
+
+$version_troubles = wplfb_version_problems();
+if ($version_troubles) {
+  deactivate_plugins(basename(__FILE__));
+  wp_die($version_troubles);
+} else {
+  require_once "init.php";
+}
