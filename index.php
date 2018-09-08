@@ -52,8 +52,7 @@ add_action("admin_enqueue_scripts", function ($hook) use ($package, $manifest) {
     return;
   }
 
-  // only for this cpt
-  if ($post->post_type !== 'wplf-form') {
+  if (!in_array($post->post_type, ['wplf-form', 'wplfb-field'])) {
     return;
   }
 

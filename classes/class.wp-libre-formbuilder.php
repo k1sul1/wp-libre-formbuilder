@@ -92,19 +92,117 @@ class WP_Libre_Formbuilder {
   public function tamperMetaBoxes() {
     add_meta_box(
       "wplfb_field_options",
-      "Field options",
+      "Field",
       function ($post) {
         ?>
-      <label>
-        <strong>Field template</strong>
-        <textarea name="wplfb-field-template"><?=get_post_meta($post->ID, "wplfb-field-template", true)?></textarea>
-      </label><br>
+      <section>
+        <h3>Field</h3>
 
-      <label>
-        <strong>Field label</strong>
-        <input name="wplfb-field-label" value="<?=get_post_meta($post->ID, "wplfb-field-label", true)?>">
-      </label><br>
+        <label>
+          <strong>Field HTML</strong>
 
+          <textarea name="content"><?=$post->post_content;?></textarea>
+        </label>
+
+        <p>
+          Put the HTML that you want to be editable in the textarea above.
+          Only the first HTML tag is used, if you require wrapping HTML around the field, use a field template.
+        </p>
+
+        <h4>Field attributes</h4>
+        <p>
+          By default, all attributes on the input will render as editable text inputs
+          in the builder, with a few exceptions:
+        </p>
+
+        <ul>
+          <li>
+            <strong>type</strong>: not rendered at all
+          </li>
+          <li>
+            <strong>required</strong>: rendered as checkbox
+          </li>
+        </ul>
+
+        <p>You can configure each attribute to your liking using JSON. Pass the JSON in wplfbAttributes attribute.</p>
+        <pre><code>{
+  "attributeName": {
+    "type": "checkbox",
+    "readOnly": false,
+    "hidden": false
+  }
+}
+</code></pre>
+
+        <ul>
+          <li>
+            <strong>type</strong>: change the input type of the attribute. Available values:<br>
+            <ul>
+              <li>checkbox</li>
+              <li>text</li>
+            </ul>
+          </li>
+          <li>
+            <strong>readOnly</strong>: if set to true, will render the attribute as unchangeable
+          </li>
+          <li>
+            <strong>hidden</strong>: if set to true, will not render the attribute at all
+          </li>
+        </ul>
+
+        <h4>Example</h4>
+
+        <pre><code><?=htmlspecialchars( // Linters...
+          '<textarea name="message" maxlength="500" value="Say something" custom required wplfbAttributes=\'{
+  "custom": {
+    "type": "checkbox",
+    "readOnly": false,
+    "hidden": false
+  }
+}\'></textarea>'
+                    ); ?></code></pre>
+
+      </section>
+
+      <section>
+        <h3>Field template</h3>
+
+        <label>
+          <strong>Template HTML</strong>
+
+          <textarea name="wplfb-field-template"><?=get_post_meta($post->ID, "wplfb-field-template", true)?></textarea>
+        </label>
+
+        <p>
+          If you want to use the field template feature, make sure that you add an element with
+          the class wplfb-field-container, or your field will not work.<br><br>
+
+          Although the template isn't editable from the builder, nothing prevents you from
+          using features like dynamic values and multilinguality placeholders.
+        </p>
+
+        <h4>Example</h4>
+        <pre><code><?=(htmlspecialchars('<div class="wplfb-input">
+  <div class="wplfb-field-container"></div>
+</div>')); ?></code></pre>
+      </section>
+
+      <section>
+        <h3>Field label</h3>
+
+        <label>
+          <strong>Label</strong>
+          <input
+            name="wplfb-field-label"
+            placeholder="Leave empty to disable"
+            value="<?=get_post_meta($post->ID, "wplfb-field-label", true)?>">
+        </label>
+
+        <p>
+          Currently only "nested" labels are supported. Should you use a label
+          <em>(and you should!)</em>, the field will be nested inside the label.
+        </p>
+      </section>
         <?php
       },
       "wplfb-field",
