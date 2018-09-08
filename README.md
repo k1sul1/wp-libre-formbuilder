@@ -79,3 +79,12 @@ The class `wplfb-field-container` is mandatory.
 
 ### Hold up. Templates and wrappers look like the same to me?
 Indeed they do, but they're not. Templates can't contain multiple fields, as in, they can't have children. When you use templates, the tag you used for the template is discarded and a field takes it's place, but when you use wrapper fields, you can put any field inside it and the wrapping element is preserved.
+
+## FAQ
+
+### Why no drag & drop?
+DnD interfaces are often tedious to use. Sure, they work great on desktop, when there's one level, but complex forms may have any number of levels. Using mobile devices with limited screen space makes it spectacularly easy to ~~ruin everything~~ misplace elements.
+
+By not relying on DnD the code stays relatively simple, and works on every device. The current move controls should feel intuitive, and after adding keyboard shortcuts everything should be a breeze.
+
+If there's demand, drag & drop controls might be implemented, there's nothing in the code preventing that from being done.
