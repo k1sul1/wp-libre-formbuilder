@@ -8,7 +8,7 @@ The plugin is in rather early development, and new features and improvements are
 
 ![in move mode](/assets/screenshot-1.png)
 ![in preview mode](/assets/screenshot-2.png)
-![in edit mode](/assets/screenshot-2.png)
+![in edit mode](/assets/screenshot-3.png)
 ![in field add screen](/assets/screenshot-4.png)
 
 ## How does it work
