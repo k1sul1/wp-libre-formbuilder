@@ -4,6 +4,18 @@ Free WYSIWYG formbuilder for WP Libre Form. Anyone who is able to write HTML is 
 
 The plugin is in rather early development, and new features and improvements are subject to be added based on user feedback.
 
+## Installing
+You need to have WP Libre Form installed before you can use this plugin.
+
+The plugin has been submitted to the WordPress plugin directory, and once accepted, should appear there.
+Until that happens, you can download the latest release on [the releases page](https://github.com/k1sul1/wp-libre-formbuilder/releases).
+
+You can also use Composer:
+
+```
+composer require k1sul1/wp-libre-formbuilder
+```
+
 ## Screenshots
 
 ![in move mode](/assets/screenshot-1.png)
