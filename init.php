@@ -1,4 +1,8 @@
 <?php
+if (!defined("ABSPATH")) {
+  die("You're not supposed to be here.");
+}
+
 $package = json_decode(file_get_contents("package.json", "r"));
 $manifest = json_decode(file_get_contents("builder/asset-manifest.json", "r"));
 

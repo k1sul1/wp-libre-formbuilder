@@ -12,6 +12,10 @@
  *
  */
 
+if (!defined("ABSPATH")) {
+  die("You're not supposed to be here.");
+}
+
 define("WPLFB_VERSION", "1.0.0-beta");
 
 function wplfb_version_problems() {
