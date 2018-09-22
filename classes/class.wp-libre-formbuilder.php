@@ -69,7 +69,6 @@ class WP_Libre_Formbuilder {
       "supports" => apply_filters("wplfb_cpt_supports", [
         "title",
         "editor",
-        "custom-fields",
         "revisions"
       ]),
       "taxonomies" => apply_filters("wplfb_cpt_taxonomies", []),
