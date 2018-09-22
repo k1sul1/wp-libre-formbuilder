@@ -30,11 +30,13 @@ class WP_Libre_Formbuilder {
         $template = !empty($_POST["wplfb-field-template"]) ? $_POST["wplfb-field-template"] : "";
         $label = !empty($_POST["wplfb-field-label"]) ? $_POST["wplfb-field-label"] : false;
 
-        update_post_meta($post_id, "wplfb-field-template", $template);
-        update_post_meta($post_id, "wplfb-field-label", $label);
+        // Field template contains HTML, that must remain as-is for the frontend.
+        update_post_meta($post_id, "wplfb-field-template", esc_html($template));
+        update_post_meta($post_id, "wplfb-field-label", sanitize_text_field($label));
       }
 
       if ($post->post_type === "wplf-form") {
+        // State is always a JSON export from Redux, must remain as-is or things will break!
         $state = !empty($_POST["wplfb-state"])
           ? wp_json_encode($_POST["wplfb-state"], JSON_UNESCAPED_UNICODE)
           : "";
@@ -75,7 +77,7 @@ class WP_Libre_Formbuilder {
     ]));
   }
 
-  public function render_settings_page() {
+  public function renderSettingsPage() {
     ?>
     <div class="wplfb-settings-page">
       <h1>WP Libre Formbuilder settings</h1>
@@ -101,7 +103,7 @@ class WP_Libre_Formbuilder {
         <label>
           <strong>Field HTML</strong>
 
-          <textarea name="content"><?=$post->post_content;?></textarea>
+          <textarea name="content"><?=esc_html($post->post_content);?></textarea>
         </label>
 
         <p>
@@ -170,7 +172,9 @@ class WP_Libre_Formbuilder {
         <label>
           <strong>Template HTML</strong>
 
-          <textarea name="wplfb-field-template"><?=get_post_meta($post->ID, "wplfb-field-template", true)?></textarea>
+          <textarea name="wplfb-field-template"><?php
+            echo esc_html(get_post_meta($post->ID, "wplfb-field-template", true));
+          ?></textarea>
         </label>
 
         <p>
@@ -195,7 +199,9 @@ class WP_Libre_Formbuilder {
           <input
             name="wplfb-field-label"
             placeholder="Leave empty to disable"
-            value="<?=get_post_meta($post->ID, "wplfb-field-label", true)?>">
+            value="<?php
+              echo sanitize_text_field(get_post_meta($post->ID, "wplfb-field-label", true));
+            ?>">
         </label>
 
         <p>
@@ -247,11 +253,14 @@ class WP_Libre_Formbuilder {
    * This goes around that.
    */
   public function getRequestBody() {
-    // Maybe do error handling.
     return json_decode(file_get_contents('php://input'));
   }
 
 
+  /**
+    * Get fields in a format readable by the frontend.
+    * Frontend requires unescaped HTML.
+   */
   public function getFields(WP_REST_Request $request) {
     $codefields = apply_filters("wplfb-available-code-fields", $this->fields);
     // Pass later later with callback; does not contain fields from DB
@@ -276,6 +285,16 @@ class WP_Libre_Formbuilder {
 
     // Allow user to filter the result.
     $fields = apply_filters("wplfb-available-fields", $this->fields, $codefields);
+
+    // Unescape values for frontend.
+    foreach ($fields as $key => $value) {
+      $newValue = array_merge($value, [
+        "field" => html_entity_decode($value['field']),
+        "template" => html_entity_decode($value['template']),
+      ]);
+
+      $fields[$key] = $newValue;
+    }
 
     return new WP_REST_Response([
       "fields" => $fields,

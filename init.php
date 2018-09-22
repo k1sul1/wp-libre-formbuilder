@@ -51,7 +51,7 @@ if (function_exists("wplf")) {
       "link" => "https://github.com/k1sul1/wp-libre-formbuilder",
       "version" => WPLFB_VERSION,
       "instance" => $builder,
-      "settings_page" => [$builder, "render_settings_page"],
+      "settings_page" => [$builder, "renderSettingsPage"],
     ]);
   });
 } else {
