@@ -16,6 +16,7 @@ class WP_Libre_Formbuilder {
 
   public function __construct() {
     add_action("init", [$this, "registerCPT"]);
+    add_action("current_screen", [$this, "onCurrentScreen"]);
 
     add_filter("user_can_richedit", function ($x) {
       if (isset($GLOBALS["post"]) && $GLOBALS["post"]->post_type === "wplfb-field") {
@@ -74,6 +75,43 @@ class WP_Libre_Formbuilder {
       "taxonomies" => apply_filters("wplfb_cpt_taxonomies", []),
       "show_in_rest" => true
     ]));
+  }
+
+  public function onCurrentScreen($screen) {
+    if (!empty($screen)) {
+      $id = $screen->id;
+
+      if ($id === 'wplfb-field') {
+        $field_id = !empty($_GET['post']) ? absint($_GET['post']) : null;
+        $isConflicting = get_post_meta($field_id, "wplfb-field-override", true);
+
+        if ($isConflicting) {
+          add_action("admin_notices", function () {
+            ?>
+          <div class="notice notice-error">
+            <p>
+            <?php
+              _e(
+                "It appears that there is or has been a field with the same ID as this one. Fields registered using code take precadence over fields in the database.",
+                'wp-libre-formbuilder'
+              );
+            ?>
+            </p>
+
+            <p>
+            <?php
+              _e(
+                "If you've registered a field with the same ID as this one, please create a new field, as this will not be loaded.",
+                'wp-libre-formbuilder'
+              );
+            ?>
+            </p>
+          </div>
+            <?php
+          });
+        }
+      }
+    }
   }
 
   public function renderSettingsPage() {
@@ -277,7 +315,7 @@ class WP_Libre_Formbuilder {
 
       if (!$ok) {
         // The key already exists; do not add it again or overwrite it.
-        // Combine with a huge notice in field edit page.
+        // This will show a notice on the field edit page.
         update_post_meta($p->ID, "wplfb-field-override", true);
       }
     }
