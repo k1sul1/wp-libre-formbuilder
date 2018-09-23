@@ -286,15 +286,6 @@ class WP_Libre_Formbuilder {
   }
 
   /**
-   * For whatever reason $_POST and $request->get_body_params() are empty.
-   * This goes around that.
-   */
-  public function getRequestBody() {
-    return json_decode(file_get_contents('php://input'));
-  }
-
-
-  /**
     * Get fields in a format readable by the frontend.
     * Frontend requires unescaped HTML.
    */
