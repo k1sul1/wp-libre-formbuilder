@@ -3,7 +3,7 @@
  * Plugin name: WP Libre Formbuilder
  * Plugin URI: https://github.com/k1sul1/wp-libre-form
  * Description: Formbuilder for WP Libre Form
- * Version: 1.0.0-beta
+ * Version: 1.0.0
  * Author: @k1sul1
  * Author URI: https://github.com/k1sul1/
  * License: GPLv2
@@ -16,7 +16,7 @@ if (!defined("ABSPATH")) {
   die("You're not supposed to be here.");
 }
 
-define("WPLFB_VERSION", "1.0.0-beta");
+define("WPLFB_VERSION", "1.0.0");
 
 function wplfb_version_problems() {
   $php_version = phpversion();
