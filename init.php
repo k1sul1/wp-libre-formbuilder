@@ -6,6 +6,7 @@ if (!defined("ABSPATH")) {
 $package = json_decode(file_get_contents("package.json", "r"));
 $manifest = json_decode(file_get_contents("builder/asset-manifest.json", "r"));
 
+define("WPLFB_VERSION", $package->version);
 require_once "classes/class.wp-libre-formbuilder.php";
 
 add_action("admin_enqueue_scripts", function ($hook) use ($package, $manifest) {
