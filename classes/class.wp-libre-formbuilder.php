@@ -32,7 +32,7 @@ class WP_Libre_Formbuilder {
         $label = !empty($_POST["wplfb-field-label"]) ? $_POST["wplfb-field-label"] : false;
 
         // Field template contains HTML, that must remain as-is for the frontend.
-        update_post_meta($post_id, "wplfb-field-template", esc_html($template));
+        update_post_meta($post_id, "wplfb-field-template", esc_html(wp_kses_post($template)));
         update_post_meta($post_id, "wplfb-field-label", sanitize_text_field($label));
       }
 
