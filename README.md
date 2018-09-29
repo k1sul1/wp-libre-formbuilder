@@ -7,14 +7,15 @@ The plugin is in rather early development, and new features and improvements are
 ## Installing
 You need to have WP Libre Form installed before you can use this plugin.
 
-The plugin has been submitted to the WordPress plugin directory, and once accepted, should appear there.
-Until that happens, you can download the latest release on [the releases page](https://github.com/k1sul1/wp-libre-formbuilder/releases).
+You can install it from the [WordPress plugin repository](https://wordpress.org/plugins/wp-libre-formbuilder/), or download a release from [the releases page](https://github.com/k1sul1/wp-libre-formbuilder/releases).
 
 You can also use Composer:
 
 ```
 composer require k1sul1/wp-libre-formbuilder
 ```
+
+Composer is the preferred installation method for professional developers.
 
 ## Screenshots
 
@@ -24,9 +25,72 @@ composer require k1sul1/wp-libre-formbuilder
 ![in field add screen](/assets/screenshot-4.png)
 
 ## How does it work
-Think of it as a preprocessor for WP Libre Form. It generates HTML from the building blocks you create. Obviously there's some built-in building blocks as well.
+Think of it as a preprocessor for WP Libre Form. It provides some built-in building blocks, and lets you create block from any\* HTML. See Limitations.
 
-That means that any of the usual features should work just fine. Dynamic values? Check. Multilinguality support with Polylang? Check.
+All of the standard features should work just fine. Dynamic values? Check. Multilinguality support with Polylang? Check.
+
+## Terminology
+It's easy to get confused on what word means what. Hopefully this will help.
+
+  - `field`: The content field in wplfb-field post type. If using `wplf()->plugins->Formbuilder->addField()`, it matches the array element with the same key.
+  - `template`: The field template textarea in wplfb-field post type. Same applies for PHP API. Used to provide wrapping HTML for the customizable input.
+
+## Limitations
+Turns out that working with arbitrary HTML is pretty hard. Especially if it has to be user editable. The HTML spec doesn't make things any easier. Things like `<textarea>` accept a default input value as a child, in addition to supporting the value attribute. `<button>` doesn't accept the value attribute, and instead renders any HTML inside it.
+
+These are the limitations at the moment. Some might be permanent, but most likely everything is fixable. It's just this limited amount of time, resources and motivation I have that limit my ability to fix said limitations.
+
+Is something missing from this list? Add an issue or send a PR with it added.
+
+### Nested HTML tags inside `field` do not work
+
+Example:
+
+```
+<div class="wrapper" doge="cate">
+  <div class="test">
+    <div class="wplfb-child-container"></div>
+  </div>
+</div>
+```
+
+`div.test` just magically disappears. Fixing this probably requires recursion and there's already plenty of it in the codebase. [This will most likely be fixed in the future, if you've ideas on how, please contribute.](https://github.com/k1sul1/wp-libre-formbuilder/issues/9)
+
+This is a real problem with things like `<select>` inputs.
+
+*Workaround*: You tell me. Dynamic values feature of WPLF?
+
+### Only the first HTML tag is customizable inside `field`
+Related to the previous limitation, but is also a design decision.
+
+```
+<div class="wrapper" doge="cate">
+  <div class="wplfb-child-container"></div>
+</div>
+```
+
+You can edit the class and doge attributes, but you have no control over the element with the class wplfb-child-container.
+
+This will probably stay like this forever, for a couple of reasons
+1. It increases the cyclomatic complexity of the codebase by a fucking lot
+2. It's an UI nightmare
+3. It can be worked around
+
+### Making changes to fields don't sync to forms
+This is pretty much a design decision. When you've added a field to a form, it will render the same way every time, even if you make changes to the underlying field object.
+
+Example:
+1. Add wrapper field to form
+2. Edit wrapper field and add a new attribute to it
+3. Save the form
+
+The wrapper field in the form will not contain the new attribute.
+
+Possibly fixed in later versions by adding a sync button to forms or invidual fields.
+
+This is to make sure that updates to this plugin can change the defaults and not break anything.
+
+*Workaround*: Add a new field, select the same type, add the attributes, delete the old field.
 
 ## How to add fields
 ### The easy way
