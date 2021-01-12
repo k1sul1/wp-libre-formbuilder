@@ -1,21 +1,10 @@
-# WP Libre Formbuilder
+# dead plugin
 
-Free WYSIWYG formbuilder for WP Libre Form. Anyone who is able to write HTML is able to create fields that act as building blocks for the forms, and the outputted forms are rather accessible.
+This was a prototype which could've been a fully functional visual form builder. It was a bit too ambitiuous, and edge cases and the aholes at wp.org Plugin Review Team killed it.
 
-The plugin is in rather early development, and new features and improvements are subject to be added based on user feedback.
+If I were to start from the beginning, I'd build the components from React, and not HTML with hacks. Fields like select can get quite a bit more complex than just a few options. I might've forgotten the existence of optiongroup etc when building the prototype, and pretty much everything is based on the idea that you have elements which can take one children.
 
-## Installing
-You need to have WP Libre Form installed before you can use this plugin.
-
-You can install it from the [WordPress plugin repository](https://wordpress.org/plugins/wp-libre-formbuilder/), or download a release from [the releases page](https://github.com/k1sul1/wp-libre-formbuilder/releases).
-
-You can also use Composer:
-
-```
-composer require k1sul1/wp-libre-formbuilder
-```
-
-Composer is the preferred installation method for professional developers.
+See limitations below if you're curious on why this isn't as easy as I thought it would be.
 
 ## Screenshots
 
